@@ -152,15 +152,20 @@ h3 { font-family: var(--font-mono); font-size: 11px; font-weight: 500; text-tran
 .hint { font-size: 12px; color: var(--muted); }
 @media (prefers-reduced-motion: no-preference) { .lead-btn, .btn { transition: border-color .15s, background .15s; } }
 
-:root{--organizer-ink:#7651b6;--organizer-soft:#f0eafa;--speaker-ink:#315fc2;--speaker-soft:#e8effc}
-:root[data-theme="dark"]{--organizer-ink:#c4a8ff;--organizer-soft:#30243e;--speaker-ink:#9bbaff;--speaker-soft:#1e2c47}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--organizer-ink:#c4a8ff;--organizer-soft:#30243e;--speaker-ink:#9bbaff;--speaker-soft:#1e2c47}}
-.cat-organizer{color:var(--organizer-ink);background:var(--organizer-soft)}.cat-speaker{color:var(--speaker-ink);background:var(--speaker-soft)}
+:root{--organizer-ink:#7651b6;--organizer-soft:#f0eafa;--speaker-ink:#315fc2;--speaker-soft:#e8effc;--guest-ink:#1b7a43;--guest-soft:#eaf7ef}
+:root[data-theme="dark"]{--organizer-ink:#c4a8ff;--organizer-soft:#30243e;--speaker-ink:#9bbaff;--speaker-soft:#1e2c47;--guest-ink:#7ee0a4;--guest-soft:#1c3525}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--organizer-ink:#c4a8ff;--organizer-soft:#30243e;--speaker-ink:#9bbaff;--speaker-soft:#1e2c47;--guest-ink:#7ee0a4;--guest-soft:#1c3525}}
+.cat-organizer{color:var(--organizer-ink);background:var(--organizer-soft)}.cat-speaker{color:var(--speaker-ink);background:var(--speaker-soft)}.cat-guest{color:var(--guest-ink);background:var(--guest-soft)}
 .lead-btn.organizer{border-left:4px solid var(--organizer-ink)}.lead-btn.organizer .avatar,.who.organizer .avatar{color:var(--organizer-ink);background:var(--organizer-soft)}
 .who.organizer{padding:16px;border-radius:12px;border-left:4px solid var(--organizer-ink);background:var(--organizer-soft)}
+.lead-btn.speaker{border-left:4px solid var(--speaker-ink)}.lead-btn.speaker .avatar,.who.speaker .avatar{color:var(--speaker-ink);background:var(--speaker-soft)}
+.who.speaker{padding:16px;border-radius:12px;border-left:4px solid var(--speaker-ink);background:var(--speaker-soft)}
+.lead-btn.guest{border-left:4px solid var(--guest-ink)}.lead-btn.guest .avatar,.who.guest .avatar{color:var(--guest-ink);background:var(--guest-soft)}
+.who.guest{padding:16px;border-radius:12px;border-left:4px solid var(--guest-ink);background:var(--guest-soft)}
 .lead-btn .tag{display:inline-block;margin-top:5px;font-size:10px}.source-links{margin:0;padding-left:18px;line-height:1.9}.source-links a{color:var(--accent-ink)}
 .filter-chip[data-cat="Organizer"][aria-pressed="true"]{border-color:var(--organizer-ink);background:var(--organizer-soft);color:var(--organizer-ink)}
 .filter-chip[data-cat="Speaker"][aria-pressed="true"]{border-color:var(--speaker-ink);background:var(--speaker-soft);color:var(--speaker-ink)}
+.filter-chip[data-cat="Guest"][aria-pressed="true"]{border-color:var(--guest-ink);background:var(--guest-soft);color:var(--guest-ink)}
 .grid>aside{min-width:0}.who h2{overflow-wrap:anywhere}.meet,.facts{min-width:0}.filter-chip{min-height:36px}
 @media(max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}.list{max-height:300px;overflow:auto;padding:3px}.facts{grid-template-columns:minmax(0,1fr)}.meet{grid-template-columns:minmax(0,1fr)}}
 </style>
@@ -172,7 +177,7 @@ h3 { font-family: var(--font-mono); font-size: 11px; font-weight: 500; text-tran
   <header class="top">
     <div class="brand">
       <h1>PNSQC Lead Finder</h1>
-      <p>Speakers and organisers at PNSQC. Search a name, get the full context.</p>
+      <p>Speakers, organisers, and visiting attendees at PNSQC. Search a name, get the full context.</p>
     </div>
     <div class="event-chip">PNSQC 2026 · Oct 12–14 · Portland, OR</div>
   </header>
@@ -1551,6 +1556,328 @@ const LEADS = [
       "https://pnsqc.org/about/board_organization/",
       "https://www.linkedin.com/in/kathleen-hess-0395b3152/"
     ]
+  },
+  {
+    "id": "jyotheeswara-reddy-gottam",
+    "category": "Guest",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Jyotheeswara Reddy Gottam",
+    "formalName": "",
+    "tags": [
+      "PNSQC attendee"
+    ],
+    "role": "Senior Software Engineer",
+    "company": "Walmart Global Tech",
+    "location": "Dublin, CA",
+    "linkedin": "https://www.linkedin.com/in/gjreddy/",
+    "firstFound": "At the PNSQC 2026 pre-kickoff dinner (Millan Kaul's post); attending Millan's Monday 3:00 PM session",
+    "warmth": "Warm",
+    "summary": "11 years at Walmart Global Tech (worked on Walmart Pay). QA roots: Lead Software Quality Engineering at Williams-Sonoma, Lead Software Automation Engineer at Mercury Insurance. He declined Dreamforce (not into CRM) and was booked for our Oct 7 SF workshop, so this is the first real chance to meet.",
+    "talkingPoints": [
+      "E2E and flaky test triage at Walmart scale.",
+      "His move from QE lead to engineering.",
+      "Playwright use inside Walmart teams."
+    ],
+    "opener": "Hi Jyotheeswara, sorry we missed you at the SF workshop. I'm at PNSQC too. Would love to grab a coffee between sessions, maybe after Millan's talk?",
+    "timeline": [
+      {
+        "date": "2026-09-02",
+        "title": "Dreamforce invite",
+        "text": "Connected on LinkedIn and asked if he was attending Dreamforce. He replied he is not into CRM or Salesforce."
+      },
+      {
+        "date": "2026-10-07",
+        "title": "SF workshop invite",
+        "text": "Invited him to the TestDino workshop in SF. He was fully booked that day."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. First chance to meet in person.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-09-02",
+        "time": "4:54 PM",
+        "from": "me",
+        "text": "glad to connect with you Jyotheeswara :) / are you attending dreamforce this year?"
+      },
+      {
+        "date": "2026-09-02",
+        "time": "8:04 PM",
+        "from": "them",
+        "text": "Hi Pratik, I m not into salesforce or CRM."
+      },
+      {
+        "date": "2026-10-07",
+        "time": "2:39 PM",
+        "from": "me",
+        "text": "hey Jyotheeswara, hope you're doing well! quick one, are you around SF for Tech Week this week? we're hosting a hands-on workshop this Wednesday (Oct 7) in SoMa with TestDino (the Playwright test platform I'm building). it's all about AI agents + Playwright + evals, so teams can ship AI-written code fast without breaking prod. no slides, no pitch. drinks and bites on us (Wed, Oct 7, 5:30 PM). would be great to see you there!"
+      },
+      {
+        "date": "2026-10-07",
+        "time": "6:36 PM",
+        "from": "them",
+        "text": "Thanks Pratik !! My calender is booked today."
+      }
+    ]
+  },
+  {
+    "id": "tariq-king",
+    "category": "Guest",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Tariq King",
+    "formalName": "",
+    "tags": [
+      "PNSQC attendee"
+    ],
+    "role": "CEO, Test IO; VP AI-Driven Quality Engineering, EPAM",
+    "company": "Test IO (EPAM)",
+    "location": "Miami-Fort Lauderdale, FL",
+    "linkedin": "https://www.linkedin.com/in/tariqking/",
+    "firstFound": "Sep 16 LinkedIn post, 'see you soon at the Pacific Northwest Software Quality Conference'",
+    "warmth": "Cold",
+    "summary": "Ex Chief Scientist AI/ML at test.ai; ex Head of Quality and Performance at Ultimate Software. 13K+ followers, known AI-in-testing voice. Gave Pratik advice in 2021, met at StarWest (Sep 2024). Aug 27, 2025 we asked him to review TestDino; no reply.",
+    "talkingPoints": [
+      "Whether EPAM client teams use Playwright.",
+      "Partnership or referral via EPAM.",
+      "Ask for the TestDino review in person."
+    ],
+    "opener": "Hi Tariq, I'm at PNSQC this week. Would love to catch up since StarWest and show you what TestDino became. 10 minutes between sessions?",
+    "timeline": [
+      {
+        "date": "2021-04-11",
+        "title": "First advice",
+        "text": "Asked for his advice on automation testing and flaky Selenium tests in agile."
+      },
+      {
+        "date": "2024-09-20",
+        "title": "StarWest meetup",
+        "text": "Met at StarWest conference."
+      },
+      {
+        "date": "2025-08-27",
+        "title": "TestDino review ask",
+        "text": "Introduced TestDino Playwright reporting and asked for his review. No reply."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. First chance to meet in person.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2021-04-11",
+        "time": "7:54 PM",
+        "from": "me",
+        "text": "Asked for his advice on automation testing in an agile project."
+      },
+      {
+        "date": "2021-04-15",
+        "time": "12:12 AM",
+        "from": "me",
+        "text": "Thanks for revering Tariq! Explained flaky Selenium-NodeJS tests breaking on frequent UI changes and asked how to improve the process."
+      },
+      {
+        "date": "2024-09-20",
+        "time": "5:03 PM",
+        "from": "me",
+        "text": "Said he'd attend StarWest and hoped to catch up there."
+      },
+      {
+        "date": "2025-08-27",
+        "time": "7:59 PM",
+        "from": "me",
+        "text": "hi Tariq, it was please meeting you at Starwest"
+      },
+      {
+        "date": "2025-08-27",
+        "time": "8:00 PM",
+        "from": "me",
+        "text": "Introduced TestDino, a Playwright-native reporting layer that classifies failures (bug vs flaky vs UI change) and saves 6 to 8 hours of debugging a week."
+      },
+      {
+        "date": "2025-08-27",
+        "time": "8:03 PM",
+        "from": "me",
+        "text": "I'd really value your perspective as someone who's seen so many teams struggle with this. Would you be open to reviewing it or sharing your thoughts? (shared testdino.com and Product Hunt link)"
+      }
+    ]
+  },
+  {
+    "id": "gwen-iarussi",
+    "category": "Guest",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Gwen Iarussi",
+    "formalName": "",
+    "tags": [
+      "PNSQC attendee"
+    ],
+    "role": "Founder, Fractional CTO/CIO; President and VP of Technology, Association for Software Testing",
+    "company": "AthenaIQ / AST",
+    "location": "Salt Lake City, UT",
+    "linkedin": "https://www.linkedin.com/in/gweniarussi/",
+    "firstFound": "Marked attending on the PNSQC 2026 LinkedIn event",
+    "warmth": "None",
+    "summary": "Ex VP Enterprise SDLC Practice Governance and VP Enterprise Technology Strategy at Zions Bancorporation; Sr Manager IT/Cyber Governance at Mountain America Credit Union to Sep 2026. Audit-ready delivery in regulated domains, AI assurance. Mutual with Sreedhar Ailu.",
+    "talkingPoints": [
+      "AST community partnership (talks, content).",
+      "Test evidence and audit trails for regulated teams.",
+      "Her fractional CTO clients as referrals."
+    ],
+    "opener": "Hi Gwen, I saw you're at PNSQC. I'm here with TestDino and would love to hear how AST is thinking about AI in testing. Coffee between sessions?",
+    "timeline": [
+      {
+        "date": "2026-10-12",
+        "title": "Found on LinkedIn",
+        "text": "Found on LinkedIn, Oct 12, 2026."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. First chance to meet in person.",
+        "now": true
+      }
+    ],
+    "messages": []
+  },
+  {
+    "id": "mike-sirchuk",
+    "category": "Guest",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Mike Sirchuk",
+    "formalName": "",
+    "tags": [
+      "PNSQC attendee"
+    ],
+    "role": "Founder",
+    "company": "Swa Technology",
+    "location": "Camas, WA",
+    "linkedin": "https://www.linkedin.com/in/sirchuk/",
+    "firstFound": "Co-authored a PNSQC 2026 paper with Rahul K. Ravel and Ben Pickett (Sep 15 post)",
+    "warmth": "None",
+    "summary": "8 years at Nike as Director, Site Reliability Engineering and Director, Release Management. Earlier Staples global eCommerce release management. Paper: AI passing thousands of tests yet quietly giving wrong answers.",
+    "talkingPoints": [
+      "Testing AI outputs beyond pass/fail.",
+      "Release gating from his Nike years.",
+      "Portland enterprise intros."
+    ],
+    "opener": "Hi Mike, I read about your PNSQC paper on AI giving wrong answers while every test passes. I'm at PNSQC too and would love to hear how you caught it.",
+    "timeline": [
+      {
+        "date": "2026-10-12",
+        "title": "Found on LinkedIn",
+        "text": "Found on LinkedIn, Oct 12, 2026."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. First chance to meet in person.",
+        "now": true
+      }
+    ],
+    "messages": []
+  },
+  {
+    "id": "emmanuel-bonnet",
+    "category": "Guest",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Emmanuel Bonnet",
+    "formalName": "",
+    "tags": [
+      "Partner"
+    ],
+    "role": "Founder, Partner",
+    "company": "PLUS QA (Portland QA services, PNSQC sponsor)",
+    "location": "Portland, OR",
+    "linkedin": "https://www.linkedin.com/in/manubonnet/",
+    "firstFound": "Marked attending on the PNSQC 2026 LinkedIn event; PLUS QA is sponsoring",
+    "warmth": "None",
+    "summary": "Running PLUS QA since 2008; earlier QA Lead at Intel. Mutual with Lisa Crispin and Gwen Iarussi.",
+    "talkingPoints": [
+      "Partner or reseller model for TestDino with PLUS QA clients.",
+      "Which clients run Playwright."
+    ],
+    "opener": "Hi Emmanuel, I'm at PNSQC with TestDino. Would love to stop by the PLUS QA booth and talk about how your clients handle Playwright reporting.",
+    "timeline": [
+      {
+        "date": "2026-10-12",
+        "title": "Found on LinkedIn",
+        "text": "Found on LinkedIn, Oct 12, 2026."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. First chance to meet in person.",
+        "now": true
+      }
+    ],
+    "messages": []
+  },
+  {
+    "id": "kevin-pyles",
+    "category": "Speaker",
+    "talkTitle": "Quality Nervous System",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Kevin Pyles",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Lead Software Architect",
+    "company": "NiCE",
+    "location": "Eagle Mountain, UT",
+    "linkedin": "https://www.linkedin.com/in/kevin-pyles/",
+    "firstFound": "PNSQC 2026 speaker on the Quality Nervous System",
+    "warmth": "Brief",
+    "summary": "AI/ML SDET 5 at FamilySearch; Director, Test Engineering at O.C. Tanner (cut testing time from 20 days to under 2 hours per feature); Head of Product at test.ai.",
+    "talkingPoints": [
+      "His Quality Nervous System vs TestDino analytics.",
+      "test.ai history (shared with Tariq King)."
+    ],
+    "opener": "Hi Kevin, I'm at PNSQC and looking forward to your Quality Nervous System talk. Would love to say hi after.",
+    "timeline": [
+      {
+        "date": "2026-08-19",
+        "title": "First outreach",
+        "text": "Messaged about his Quality Nervous System talk at PNSQC. He replied with a thumbs up."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. First chance to meet in person.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-19",
+        "time": "3:24 PM",
+        "from": "me",
+        "text": "Hi Kevin, I saw you're speaking about the Quality Nervous System at PNSQC. would love to attend and meet you there !"
+      },
+      {
+        "date": "2026-08-19",
+        "time": "7:21 PM",
+        "from": "them",
+        "text": "(thumbs up)"
+      }
+    ]
   }
 ];
 // ---------- END DATA ----------
@@ -1567,8 +1894,8 @@ const store = {
 
 let current = LEADS[0]?.id;
 let activeCat = "";
-const CAT_COLOR = { Speaker: "#4f82e8", Exhibitor: "#c89030", Organizer: "#9168e6", Guest: "#7f8c9d" };
-const CAT_ORDER = ["Speaker", "Exhibitor", "Organizer", "Guest"];
+const CAT_COLOR = { Speaker: "#4f82e8", Organizer: "#9168e6", Guest: "#2ba663" };
+const CAT_ORDER = ["Speaker", "Organizer", "Guest"];
 
 function renderFilters() {
   const cats = [...new Set(LEADS.map(l => l.category).filter(Boolean))]
@@ -1576,7 +1903,8 @@ function renderFilters() {
   if (!cats.length) { $("#filters").innerHTML = ""; return; }
   const chip = (label, val, dot) =>
     `<button class="filter-chip" data-cat="${esc(val)}" aria-pressed="${activeCat === val}">${dot ? `<span class="filter-dot" style="background:${dot}"></span>` : ""}${esc(label)}</button>`;
-  $("#filters").innerHTML = chip(`All (${LEADS.length})`, "", "") + cats.map(c => chip(`${c === "Organizer" ? "Organisers" : c === "Speaker" ? "Speakers" : c} (${LEADS.filter(l => l.category === c).length})`, c, CAT_COLOR[c] || "#7f8c9d")).join("");
+  const catLabel = c => c === "Organizer" ? "Organisers" : c === "Speaker" ? "Speakers" : c === "Guest" ? "Guests / Attendees" : c;
+  $("#filters").innerHTML = chip(`All (${LEADS.length})`, "", "") + cats.map(c => chip(`${catLabel(c)} (${LEADS.filter(l => l.category === c).length})`, c, CAT_COLOR[c] || "#2ba663")).join("");
 }
 
 function lastContact(l) {
@@ -1596,9 +1924,9 @@ function renderList() {
     (!q || [l.name, l.formalName, ...(l.aliases || []), l.role, l.company, l.location, l.category, l.warmth, l.talkTitle, ...l.tags].join(" ").toLowerCase().includes(q)));
   $("#count").textContent = `${hits.length} of ${LEADS.length} lead${LEADS.length === 1 ? "" : "s"}`;
   $("#list").innerHTML = hits.length ? hits.map(l => `
-    <button class="lead-btn ${l.category === "Organizer" ? "organizer" : ""}" data-id="${esc(l.id)}" aria-current="${l.id === current}">
+    <button class="lead-btn ${(l.category || "Guest").toLowerCase()}" data-id="${esc(l.id)}" aria-current="${l.id === current}">
       <span class="avatar">${initials(l.name)}</span>
-      <span style="min-width:0"><span class="n">${esc(l.name)}</span><span class="s">${esc(subline(l))}</span><span class="tag cat cat-${esc((l.category || "Guest").toLowerCase())}">${l.category === "Organizer" ? "Organiser" : esc(l.category || "Guest")}</span></span>
+      <span style="min-width:0"><span class="n">${esc(l.name)}</span><span class="s">${esc(subline(l))}</span><span class="tag cat cat-${esc((l.category || "Guest").toLowerCase())}">${l.category === "Organizer" ? "Organiser" : l.category === "Guest" ? "Guest (Attendee)" : esc(l.category || "Guest")}</span></span>
     </button>`).join("") : `<div class="empty">${q ? `No one matches “${esc(q)}”.` : "No one in this category yet."} Try another search or filter.</div>`;
   if (!hits.length) { current = null; renderDossier(); }
   else if (!hits.some(h => h.id === current)) { current = hits[0].id; renderDossier(); renderList(); }
@@ -1622,15 +1950,17 @@ function renderDossier() {
   }).join("");
 
   $("#dossier").innerHTML = `
-    <section class="who ${l.category === "Organizer" ? "organizer" : ""}">
+    <section class="who ${(l.category || "guest").toLowerCase()}">
       <span class="avatar">${initials(l.name)}</span>
       <div style="min-width:0">
         <h2>${esc(l.name)}</h2>
         <div class="sub">${esc([l.role, l.company].filter(Boolean).join(" at ") || "Role and company not added yet")}</div>
         <div class="tags">
-          ${l.category ? `<span class="tag cat cat-${esc(l.category.toLowerCase())}">${l.category === "Organizer" ? "Organiser" : esc(l.category)}</span>` : ""}
+          ${l.category ? `<span class="tag cat cat-${esc(l.category.toLowerCase())}">${l.category === "Organizer" ? "Organiser" : l.category === "Guest" ? "Guest (Normal Attendee)" : esc(l.category)}</span>` : ""}
+          ${l.category === "Guest" ? `<span class="tag">Visiting attendee</span>` : ""}
           ${l.tags.map(t => `<span class="tag accent">${esc(t)}</span>`).join("")}
-          ${l.warmth ? `<span class="tag">${esc(l.warmth)}</span>` : ""}
+          ${l.warmth && l.warmth !== "None" ? `<span class="tag">${esc(l.warmth)}</span>` : ""}
+          ${l.warmth === "None" ? `<span class="tag">New lead (no chat)</span>` : ""}
           ${l.messages.length ? `<span class="tag">Last chat ${lastContact(l)}</span>` : ""}
           ${l.category === "Organizer" && !l.messages.length ? `<span class="tag">Connection status unknown</span>` : ""}
           ${met ? `<span class="tag good">Met at PNSQC</span>` : ""}
@@ -1645,6 +1975,7 @@ function renderDossier() {
         ${fact("Company", esc(l.company), "Add from LinkedIn", true)}
         ${fact("Based in", esc(l.location), "Add from LinkedIn")}
         ${fact("How we found them", esc(l.firstFound))}
+        ${l.category === "Guest" ? fact("Attendee status", "Guest (visiting / regular attendee · not speaking or organizing)", "", true) : ""}
         ${fact("Goes by", l.aliases?.length ? esc(l.aliases.join(", ")) : l.formalName ? esc(l.formalName) : "", "Not specified")}
         ${fact("LinkedIn", l.linkedin ? `<a href="${esc(l.linkedin)}" target="_blank" rel="noopener">Open profile ↗</a>` : "", "Profile unconfirmed")}
       </dl>
@@ -1708,11 +2039,10 @@ function renderDossier() {
       </div>
     </section>` : ""}
 
-    ${l.messages.length ? `
     <section>
       <h3>LinkedIn conversation</h3>
-      <div class="chat">${chat}</div>
-    </section>` : ""}
+      ${l.messages.length ? `<div class="chat">${chat}</div>` : `<div style="padding:14px 16px; border:1.5px dashed var(--line); border-radius:10px; color:var(--muted); font-size:14px; background:var(--surface);">No messages yet</div>`}
+    </section>
 
     ${l.category === "Organizer" ? '<p class="hint">No contact history was supplied. Drafts have not been sent. Confirm availability before planning a meeting.</p>' : ''}
     ${l.sources?.length ? '<section><h3>Profile sources</h3><ul class="source-links">'+l.sources.map(url=>'<li><a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(url.includes('pnsqc.org')?'PNSQC board biography':url.includes('linkedin.com')?'LinkedIn profile':'Supporting biography')+' ↗</a></li>').join('')+'</ul></section>' : ''}
