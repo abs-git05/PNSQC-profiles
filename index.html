@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>PNSQC Lead Finder</title>
+<title>PNSQC Lead Finder</title><link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 <style>
 /* Layout: search bar on top, lead list left, dossier right; stacks to one column on phones */
 :root {
@@ -55,6 +56,12 @@ header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-cont
 .search label { position: absolute; left: -9999px; }
 .search input { width: 100%; font: inherit; font-size: 17px; padding: 14px 16px 14px 44px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23999' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 16px center; color: var(--fg); }
 .search input:focus { outline: none; border-color: var(--accent); }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.filter-chip { display: inline-flex; align-items: center; font: inherit; font-size: 13px; font-weight: 600; padding: 5px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+.filter-chip:hover { border-color: var(--accent); }
+.filter-chip[aria-pressed="true"] { border-color: var(--fg); color: var(--fg); background: var(--surface); }
+.filter-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.filter-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; flex: none; }
 
 .grid { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px; align-items: start; }
 @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
@@ -66,24 +73,41 @@ header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-cont
 .lead-btn[aria-current="true"] { background: var(--surface); border-color: var(--fg); }
 .lead-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 15px; }
-.lead-btn .n { font-weight: 600; }
-.lead-btn .s { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lead-btn .n { font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lead-btn .s { font-size: 13px; color: var(--muted); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .empty { color: var(--muted); font-size: 14px; padding: 16px 4px; }
 
 .dossier { min-width: 0; display: flex; flex-direction: column; gap: 28px; }
 .who { display: flex; flex-wrap: wrap; gap: 16px 20px; align-items: center; }
 .who .avatar { width: 64px; height: 64px; font-size: 24px; }
 .who h2 { font-family: var(--font-display); font-size: 32px; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
-.who .sub { color: var(--muted); margin-top: 4px; }
+.who .sub { color: var(--muted); margin-top: 4px; max-width: 64ch; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .tag { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
 .tag.accent { border-color: transparent; background: var(--accent-soft); color: var(--accent-ink); }
 .tag.good { border-color: transparent; background: var(--good-soft); color: var(--good); }
+/* Attendee category chips: one distinct color per type, readable on light and dark */
+.tag.cat { border-color: transparent; font-weight: 600; }
+.cat-speaker { background: rgba(79,130,232,0.16); color: #4f82e8; }
+.cat-exhibitor { background: rgba(200,144,48,0.18); color: #c89030; }
+.cat-organizer { background: rgba(145,104,230,0.18); color: #9168e6; }
+.cat-guest { background: rgba(107,122,141,0.20); color: #7f8c9d; }
+
+.talk-card { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid #4f82e8; border-radius: 12px; padding: 16px 18px; }
+.talk-title { font-family: var(--font-display); font-weight: 700; font-size: 18px; line-height: 1.25; }
+.talk-abstract { margin: 8px 0 0; color: var(--muted); max-width: 70ch; white-space: pre-wrap; overflow-wrap: anywhere; }
+.talk-abstract.clamp { max-height: 168px; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent); mask-image: linear-gradient(180deg, #000 72%, transparent); }
+.talk-abstract.pending { font-style: italic; }
+.talk-more { margin-top: 8px; font: inherit; font-size: 13px; font-weight: 600; color: var(--accent-ink); background: none; border: none; padding: 0; cursor: pointer; }
+.talk-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.talk-src { margin: 10px 0 0; font-size: 12px; }
+.talk-src a { color: var(--accent-ink); }
 
 h3 { font-family: var(--font-mono); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 0 0 10px; }
 
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .fact { background: var(--bg); padding: 12px 14px; min-width: 0; }
+.fact.wide { grid-column: 1 / -1; }
 .fact dt { font-size: 12px; color: var(--muted); }
 .fact dd { margin: 2px 0 0; font-weight: 500; overflow-wrap: anywhere; }
 .fact dd.missing { color: var(--muted); font-weight: 400; font-style: italic; }
@@ -127,8 +151,20 @@ h3 { font-family: var(--font-mono); font-size: 11px; font-weight: 500; text-tran
 .check input { width: 18px; height: 18px; accent-color: var(--good); }
 .hint { font-size: 12px; color: var(--muted); }
 @media (prefers-reduced-motion: no-preference) { .lead-btn, .btn { transition: border-color .15s, background .15s; } }
+
+:root{--organizer-ink:#7651b6;--organizer-soft:#f0eafa;--speaker-ink:#315fc2;--speaker-soft:#e8effc}
+:root[data-theme="dark"]{--organizer-ink:#c4a8ff;--organizer-soft:#30243e;--speaker-ink:#9bbaff;--speaker-soft:#1e2c47}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--organizer-ink:#c4a8ff;--organizer-soft:#30243e;--speaker-ink:#9bbaff;--speaker-soft:#1e2c47}}
+.cat-organizer{color:var(--organizer-ink);background:var(--organizer-soft)}.cat-speaker{color:var(--speaker-ink);background:var(--speaker-soft)}
+.lead-btn.organizer{border-left:4px solid var(--organizer-ink)}.lead-btn.organizer .avatar,.who.organizer .avatar{color:var(--organizer-ink);background:var(--organizer-soft)}
+.who.organizer{padding:16px;border-radius:12px;border-left:4px solid var(--organizer-ink);background:var(--organizer-soft)}
+.lead-btn .tag{display:inline-block;margin-top:5px;font-size:10px}.source-links{margin:0;padding-left:18px;line-height:1.9}.source-links a{color:var(--accent-ink)}
+.filter-chip[data-cat="Organizer"][aria-pressed="true"]{border-color:var(--organizer-ink);background:var(--organizer-soft);color:var(--organizer-ink)}
+.filter-chip[data-cat="Speaker"][aria-pressed="true"]{border-color:var(--speaker-ink);background:var(--speaker-soft);color:var(--speaker-ink)}
+.grid>aside{min-width:0}.who h2{overflow-wrap:anywhere}.meet,.facts{min-width:0}.filter-chip{min-height:36px}
+@media(max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}.list{max-height:300px;overflow:auto;padding:3px}.facts{grid-template-columns:minmax(0,1fr)}.meet{grid-template-columns:minmax(0,1fr)}}
 </style>
-<style>html{color-scheme:light}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 
@@ -136,7 +172,7 @@ h3 { font-family: var(--font-mono); font-size: 11px; font-weight: 500; text-tran
   <header class="top">
     <div class="brand">
       <h1>PNSQC Lead Finder</h1>
-      <p>Everyone we're connected with on LinkedIn who's at PNSQC. Search a name, get the full context.</p>
+      <p>Speakers and organisers at PNSQC. Search a name, get the full context.</p>
     </div>
     <div class="event-chip">PNSQC 2026 · Oct 12–14 · Portland, OR</div>
   </header>
@@ -144,6 +180,7 @@ h3 { font-family: var(--font-mono); font-size: 11px; font-weight: 500; text-tran
   <div class="search">
     <label for="q">Search leads</label>
     <input id="q" type="search" placeholder="Search by name, company, role or tag" autocomplete="off">
+    <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
   </div>
 
   <div class="grid">
@@ -167,37 +204,1352 @@ const EVENT = {
 
 const LEADS = [
   {
-    id: "venkat-jayakumar",
-    name: "Venkat Jayakumar",
-    formalName: "Venkatakrishna",
-    tags: ["Investment"],
-    role: "",
-    company: "",
-    location: "",
-    linkedin: "https://www.linkedin.com/in/ACoAABwlZfUBo9zsZOelBvJgFYCYAyXnI2N5-eM",
-    firstFound: "SaaSBoomi directory",
-    warmth: "Warm",
-    summary: "Found Venkat in the SaaSBoomi directory in March 2025 and tried to meet him at the SaaSBoomi Annual in Chennai, but it didn't happen. Followed up in May 2025 offering a call instead, with no reply. In August 2026 he replied quickly and confirmed he was going to Dreamforce. He has replied once and is friendly. Meeting at PNSQC would be the first time in person after two near misses.",
-    talkingPoints: [
-      "Ask how Dreamforce went this year; he confirmed he was attending.",
-      "Light callback to SaaSBoomi Chennai, where you missed each other.",
-      "He's tagged as an investment lead, so keep the TestDino story ready: Playwright-native test intelligence for AI-native teams.",
-      "Goal: an actual sit-down this time, even 15 minutes between sessions."
+    "id": "sreedhar-ailu",
+    "category": "Speaker",
+    "talkTitle": "Closing the Regulatory Interpretation Gap in Enterprise UAT",
+    "talkAbstract": "In regulated multi-vendor enterprise environments, User Acceptance Testing repeatedly breaks down not because of poor execution, but because regulatory intent is interpreted differently across organizational and vendor boundaries — a structural failure I identify as the Regulatory Interpretation Gap. Over thirteen years leading UAT governance across healthcare and government enterprise systems, I developed the Acceptance Translation Layer — a governance construct that creates a shared, traceable interpretation framework linking regulatory requirements to acceptance conditions before a single test case is written. Unlike conventional UAT approaches that treat traceability as a post-execution activity, ATL resolves the interpretation disconnect upstream, making it applicable to any regulated environment where multiple vendors independently own different segments of the same compliance workflow. This paper presents the RIG construct, the ATL framework, and the governance implications for enterprise quality leaders managing release readiness across complex, multi-system regulated environments.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Sreedhar Ailu",
+    "formalName": "",
+    "tags": [
+      "Prospect"
     ],
-    opener: "Hi Venkat, hope Dreamforce went well! I'm at PNSQC in Portland this week. After missing each other at SaaSBoomi, would love to finally grab a coffee in person. Are you free between sessions on Tuesday?",
-    timeline: [
-      { date: "2025-03-19", title: "First outreach", text: "Found him in the SaaSBoomi directory. Asked to meet at the SaaSBoomi Annual in Chennai." },
-      { date: "2025-05-13", title: "Missed at SaaSBoomi", text: "Couldn't catch up at the event. Offered a quick call instead. No reply." },
-      { date: "2026-08-20", title: "Reconnected", text: "Asked about Dreamforce. He replied within a minute: yes, attending." },
-      { date: "2026-10-12", title: "PNSQC, Portland", text: "Both at PNSQC. First chance to meet in person.", now: true }
+    "role": "Quality Assurance Manager, Acceptance Governance Authority for MA Health Insurance Exchange (HIX)",
+    "company": "Massachusetts Executive Office of Health and Human Services",
+    "location": "Norfolk, Massachusetts",
+    "linkedin": "https://www.linkedin.com/in/sreedhar-ailu-5b92802a9/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Hot",
+    "summary": "14+ years in public-sector healthcare QA. He owns the go/no-go release calls for the MA HIX, which serves about 2M residents, working across HIPAA and EDI X12, CMS compliance, and multi-vendor UAT. He created the Testability Coverage Rate (TCR) metric, presented it at QRS 2026, and published a free toolkit on Zenodo. His team uses Playwright and he wants to learn about TestDino. He declined a Dreamforce coffee because he is on the East Coast, and he is also on our Dreamforce list. PNSQC is the plan to finally meet.",
+    "talkingPoints": [
+      "Ask about their Playwright setup and how they report UAT readiness.",
+      "TCR vs pass rate, which ties into TestDino analytics.",
+      "Multi-vendor test governance.",
+      "Goal: book a demo."
     ],
-    messages: [
-      { date: "2025-03-19", time: "3:52 PM", from: "me", text: "Hi Venkatakrishna,\nI found you in SaaSBoomi directory! If you are joining Chennai annual event next week, I would love to connect and meet you in person at the event.\n\nThanks,\nPratik" },
-      { date: "2025-05-13", time: "3:56 PM", from: "me", text: "Hey Venkat,\nSorry I couldn’t catch up with you at SaaSBoomi — the sessions were packed and time flew! Would love to connect over a quick call instead if you're open to it. Let me know what works best for you :)" },
-      { date: "2026-08-20", time: "11:59 AM", from: "me", text: "Hi Venkat, how are you?" },
-      { date: "2026-08-20", time: "11:59 AM", from: "me", text: "are you attending dreamforce this year?" },
-      { date: "2026-08-20", time: "12:00 PM", from: "them", text: "Hey Pratik, Yes!" },
-      { date: "2026-08-20", time: "12:04 PM", from: "me", text: "That's Great, Would love to meet you there!" }
+    "opener": "Hi Sreedhar, I'm at PNSQC in Portland this week. Would love to grab 15 minutes and hear how your team runs Playwright. Are you free between sessions?",
+    "timeline": [
+      {
+        "date": "2026-08-20",
+        "title": "First outreach",
+        "text": "Messaged about his enterprise UAT talk. He replied the same night, keen to meet, and we talked TestDino and Playwright."
+      },
+      {
+        "date": "2026-09-12",
+        "title": "Dreamforce invite",
+        "text": "Invited him for coffee at Dreamforce in San Francisco."
+      },
+      {
+        "date": "2026-09-15",
+        "title": "Set for PNSQC",
+        "text": "He is on the East Coast so Dreamforce did not work. Agreed to meet at PNSQC instead."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. First chance to meet in person.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-20",
+        "time": "11:19 PM",
+        "from": "me",
+        "text": "Hi Sreedhar, I saw you're presenting on regulatory interpretation in enterprise UAT at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-20",
+        "time": "11:20 PM",
+        "from": "them",
+        "text": "Thank you so much and i would love to meet and connect with you"
+      },
+      {
+        "date": "2026-08-20",
+        "time": "11:22 PM",
+        "from": "me",
+        "text": "Thanks Sreedhar:). We have built TestDino for Playwright and are exhibiting at PNSQC. I just see you have great healthcare domain experience- I would love to meet you there sometime and learn from your experience."
+      },
+      {
+        "date": "2026-08-20",
+        "time": "11:30 PM",
+        "from": "them",
+        "text": "Sure and thank you for that, We also use playwright for our automation love to meet and discuss more on this and learn from you as well on test dino."
+      },
+      {
+        "date": "2026-09-12",
+        "time": "5:23 PM",
+        "from": "me",
+        "text": "Hi Sreedhar, I'm in San Francisco for Dreamforce and would love to connect in person. If you're around on Monday, would you have 15 minutes for a coffee? Happy to meet at a time and place that works for you."
+      },
+      {
+        "date": "2026-09-15",
+        "time": "12:32 AM",
+        "from": "them",
+        "text": "Hi Pratik, In person isnt possible as Im in East Coast, Massachusetts."
+      },
+      {
+        "date": "2026-09-15",
+        "time": "3:34 AM",
+        "from": "me",
+        "text": "Oh okay"
+      },
+      {
+        "date": "2026-09-15",
+        "time": "3:34 AM",
+        "from": "me",
+        "text": "No problem"
+      },
+      {
+        "date": "2026-09-15",
+        "time": "3:34 AM",
+        "from": "me",
+        "text": "We will meet as pnsqc then"
+      }
+    ]
+  },
+  {
+    "id": "anton-bilbaeno",
+    "category": "Speaker",
+    "talkTitle": "AI-assisted software development",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Anton Bilbaeno",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Electrical Engineer (contract)",
+    "company": "3Dio and Folktek",
+    "location": "Portland, Oregon",
+    "linkedin": "https://www.linkedin.com/in/antonbilbaeno/",
+    "firstFound": "PNSQC 2026 speaker lineup (and X)",
+    "warmth": "Hot",
+    "summary": "EE and CS from Portland State. He works across hardware and software: microphone and logic design, vision object detection, MES architecture, and a funded SBIR 2025 Phase 1 proposal. We also messaged him on X. Open item: on Sep 9 he asked for feedback on a 15 to 30 minute practice run of his talk and we never replied, so acknowledge that first.",
+    "talkingPoints": [
+      "Apologize for missing his practice-run ask from Sep 9.",
+      "The approval-workflow angle of his AI dev model.",
+      "Testing hardware-adjacent software."
+    ],
+    "opener": "Hi Anton, sorry I missed your note about a practice run. I'm at PNSQC now. Happy to catch your talk and share feedback after, or grab a coffee before it if that helps.",
+    "timeline": [
+      {
+        "date": "2026-09-03",
+        "title": "First outreach",
+        "text": "Messaged about his AI-assisted software development talk. He asked if we were making the trip and recognized us from X."
+      },
+      {
+        "date": "2026-09-04",
+        "title": "Confirmed the trip",
+        "text": "Told him yes, traveling to Portland, and that the X message was also us."
+      },
+      {
+        "date": "2026-09-09",
+        "title": "Practice-run ask",
+        "text": "He asked for feedback on a 15 to 30 minute practice run of his talk. We did not reply."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Time to close the loop in person.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-09-03",
+        "time": "9:29 PM",
+        "from": "me",
+        "text": "Hi Anton, I saw you're presenting on AI-assisted software development at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-09-03",
+        "time": "9:30 PM",
+        "from": "them",
+        "text": "Hi Pratik. Will you be making the trip out to Portland? I believe you messaged me on X also, though I can't find the message anymore."
+      },
+      {
+        "date": "2026-09-04",
+        "time": "10:26 AM",
+        "from": "me",
+        "text": "Yes, I'll be making the trip to Portland for PNSQC. And yes, that was me on X as well! I saw your name on the speaker lineup and your session topic stood out, so I thought I'd connect here too. Looking forward to meeting you there."
+      },
+      {
+        "date": "2026-09-09",
+        "time": "9:08 PM",
+        "from": "them",
+        "text": "Alright then that's a long trip! You're in India?"
+      },
+      {
+        "date": "2026-09-09",
+        "time": "9:08 PM",
+        "from": "them",
+        "text": "Yes it's been an interesting model to play around with. My gut says it's too tedious to be practical, but there may be some scenarios where it could be used to enforce an approval workflow or simply for educational purposes."
+      },
+      {
+        "date": "2026-09-09",
+        "time": "9:10 PM",
+        "from": "them",
+        "text": "I was curious if you might be willing to give me some feedback ahead of time? I could certainly use some practice with the presentation / demo. I'll try to keep it short, around 15 minutes, but I'd imagine it might be closer to 30."
+      }
+    ]
+  },
+  {
+    "id": "brittany-stewart",
+    "category": "Speaker",
+    "talkTitle": "Centaur Mode: A QA Engineer's Hands-On AI Playbook",
+    "talkAbstract": "When my organization rolled out an AI-first engineering mandate, I had two problems. I needed to show my team how QA would actually use these tools. And I needed to revisit a question I had answered for myself back in 2024, because the tools, the expectations, and the pace had all changed: what does AI-augmented QA actually look like in daily practice now?\n\nI had already been experimenting with AI in testing, including an earlier project building an AI Test Squad of specialized agents. The mandate forced a sharper question, because I needed a working answer, not a prototype. Since then, I have been working that answer out through the work itself on a large enterprise automation project: building Cypress and BDD test automation, generating scenarios and step definitions with AI assistance, healing broken tests, and scoring the quality of AI-generated artifacts before trusting them in the suite. I built a practice I call Centaur Mode: a human-led, AI-augmented way of working shaped by daily use rather than by theory.\n\nThis paper walks through what I learned. The workflows that earned a permanent place in my practice. The experiments that failed loudly. The tradeoffs that came with every tool I adopted. And the human judgment that quietly became the most valuable part of the process, including test literacy and the ability to spot when an AI-generated artifact looks right but is subtly wrong.\n\nMy goal is to give other QA practitioners practical techniques and honest language to build their own version of this practice. Not a framework to adopt, but a set of patterns, tradeoffs, and cautions from someone doing the work in public, with real consequences, on a real project.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Brittany Stewart",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker",
+      "TestDino beta"
+    ],
+    "role": "Quality Engineer (also Company Secretary)",
+    "company": "QualityWorks Consulting Group",
+    "location": "Kingston, Jamaica",
+    "linkedin": "https://www.linkedin.com/in/brittanybstewart/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Warm",
+    "summary": "ISTQB certified with 7+ years in QA across entertainment, eCommerce, and FinTech, and she has led testing for 21+ web apps. She was named in Agile Testing Days' 100 Women in Tech to Follow. We had a 30 minute call on Aug 8, 2025, she supported our Product Hunt launch, and she has had TestDino beta access since Aug 25, 2025.",
+    "talkingPoints": [
+      "Ask for her feedback on TestDino since beta access.",
+      "Her AI playbook.",
+      "QualityWorks as a partner channel."
+    ],
+    "opener": "Hi Brittany, I'm at PNSQC this week and looking forward to your AI playbook session. Would love to catch up in person after our call last year. Free for a coffee between sessions?",
+    "timeline": [
+      {
+        "date": "2025-08-04",
+        "title": "First call booked",
+        "text": "After a warm intro she shared her Calendly and we booked a 30 minute call for Aug 8, 2025."
+      },
+      {
+        "date": "2025-08-25",
+        "title": "Beta access",
+        "text": "Shared TestDino beta access so she could try it and send feedback."
+      },
+      {
+        "date": "2026-08-19",
+        "title": "Reconnected for PNSQC",
+        "text": "Messaged about her AI playbook session. She said it would be great to meet in person."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. First time meeting since the call last year.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2025-08-01",
+        "time": "3:15 PM",
+        "from": "me",
+        "text": "Hey Brittany, thanks so much for your thoughtful response. Your expertise in AI-driven QA is really amazing, and I'd love to connect over a call to learn more from you. Let me know what times work best for you, and I'll set it up :) Looking forward to it."
+      },
+      {
+        "date": "2025-08-04",
+        "time": "5:35 PM",
+        "from": "them",
+        "text": "Thank you, Pratik. Here's my Calendly link to help with scheduling. Feel free to choose your best date and time. Looking forward to meeting you."
+      },
+      {
+        "date": "2025-08-05",
+        "time": "12:03 PM",
+        "from": "me",
+        "text": "Thx, I've booked it on friday- aug 8. looking forward to meet you as well :)"
+      },
+      {
+        "date": "2025-08-05",
+        "time": "5:16 PM",
+        "from": "them",
+        "text": "Awesome! Thank you"
+      },
+      {
+        "date": "2025-08-16",
+        "time": "3:15 AM",
+        "from": "me",
+        "text": "Shared that TestDino launches on Product Hunt on Aug 20 and asked her to follow the PH page."
+      },
+      {
+        "date": "2025-08-18",
+        "time": "1:27 AM",
+        "from": "them",
+        "text": "I'm excited for the launch, Pratik! I'll check it out and get back to you with any helpful feedback."
+      },
+      {
+        "date": "2025-08-24",
+        "time": "7:17 PM",
+        "from": "me",
+        "text": "Offered free early beta access. She shared her email."
+      },
+      {
+        "date": "2025-08-25",
+        "time": "3:33 PM",
+        "from": "me",
+        "text": "Shared beta access to app.testdino.com plus videos, docs and Discord links."
+      },
+      {
+        "date": "2025-08-27",
+        "time": "1:16 PM",
+        "from": "me",
+        "text": "We're finally live on Product Hunt."
+      },
+      {
+        "date": "2026-08-19",
+        "time": "3:49 PM",
+        "from": "me",
+        "text": "Hi Brittany, I saw you're sharing a hands-on AI playbook for QA engineers at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-25",
+        "time": "1:07 AM",
+        "from": "them",
+        "text": "Hi Pratik! Yes it would be great to meet you there too!"
+      },
+      {
+        "date": "2026-08-25",
+        "time": "10:24 AM",
+        "from": "me",
+        "text": "Thanks, Brittany :)"
+      }
+    ]
+  },
+  {
+    "id": "sidharth-shukla",
+    "category": "Speaker",
+    "talkTitle": "Replacing Manual Debugging: How MCP Servers Enable Automated Root Cause Analysis in Modern QA",
+    "talkAbstract": "Modern debugging workflows in QA still rely heavily on manual log analysis, intuition, and cross-team dependencies, making root cause analysis (RCA) slow and inconsistent—especially in distributed systems.\n\nThis talk introduces a practical, engineering-driven approach to automated root cause analysis using Model Context Protocol (MCP) servers and CLI-based LLM agents.\n\nWe will walk through a live, end-to-end demo where an MCP-enabled agent is invoked from the command line to investigate a failing test case. The agent interacts with multiple systems via MCP servers—pulling application logs, querying APIs, inspecting test results, and correlating telemetry data. Using this contextual access, the agent performs intelligent analysis to:\n- Traverse and summarize large volumes of logs\n- Identify anomaly patterns and failure points\n- Pinpoint the most probable root cause\n- Highlight the impacted services/classes/modules\n- Suggest potential fixes or debugging directions\n\nThe session will showcase how MCP acts as a standardized bridge between LLMs and engineering systems, enabling agents to perform deep, contextual RCA without manual intervention.\n\nWe will also compare this workflow against traditional debugging approaches, demonstrating measurable improvements in:\n- Debugging time\n- Signal-to-noise ratio in log analysis\n- Cross-team dependency reduction\n\nFinally, attendees will gain hands-on insights into:\n- Designing MCP server integrations for QA ecosystems\n- Building CLI-driven LLM agents for defect triage\n- Scaling AI-assisted RCA workflows across teams\n\nBy the end of this session, participants will have a clear blueprint to move from reactive, manual debugging to proactive, agent-driven root cause analysis in modern QA environments.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Sidharth Shukla",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "SDET-2, AI-Driven Software Reliability Architect",
+    "company": "Amazon",
+    "location": "Lynnwood, Washington",
+    "linkedin": "https://www.linkedin.com/in/sidharth-s-77b53145/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Warm",
+    "summary": "13+ years across API, UI, and mobile automation, plus AWS DevOps, AI agents, and MCP. He has about 88K followers. We had a 30 minute Google Meet on Nov 19, 2025 and caught up again in May 2026. He shared his number (360-381-6364) for PNSQC.",
+    "talkingPoints": [
+      "MCP for RCA, close to TestDino AI failure analysis.",
+      "Flaky tests at Amazon scale.",
+      "Content collaboration given his audience."
+    ],
+    "opener": "Hi Sidharth, I'm at PNSQC this week. Looking forward to your MCP RCA talk. Want to grab a coffee before or after?",
+    "timeline": [
+      {
+        "date": "2025-11-19",
+        "title": "First call",
+        "text": "Met over a 30 minute Google Meet after sorting out a calendar mix-up."
+      },
+      {
+        "date": "2026-05-11",
+        "title": "Caught up",
+        "text": "Quick check-in, both doing well."
+      },
+      {
+        "date": "2026-08-20",
+        "title": "PNSQC outreach",
+        "text": "Messaged about his MCP root cause analysis talk. He shared his number to coordinate."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. First time meeting in person.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2025-11-11",
+        "time": "12:03 PM",
+        "from": "me",
+        "text": "Actually right now I'm in India so it'll be 4:30 Am here, can we do it in your evening or maybe morning?"
+      },
+      {
+        "date": "2025-11-11",
+        "time": "12:19 PM",
+        "from": "them",
+        "text": "Ohh, then we can connect wednesday morning 10 am"
+      },
+      {
+        "date": "2025-11-11",
+        "time": "12:19 PM",
+        "from": "them",
+        "text": "I mean IST 10 am"
+      },
+      {
+        "date": "2025-11-11",
+        "time": "12:20 PM",
+        "from": "me",
+        "text": "Perfect"
+      },
+      {
+        "date": "2025-11-11",
+        "time": "12:21 PM",
+        "from": "me",
+        "text": "Can you share me your email, I'll send an invite for next Wednesday 10 am IST"
+      },
+      {
+        "date": "2025-11-11",
+        "time": "12:25 PM",
+        "from": "them",
+        "text": "Sure (shared email)"
+      },
+      {
+        "date": "2025-11-12",
+        "time": "11:01 AM",
+        "from": "me",
+        "text": "I've invited, Sidharth"
+      },
+      {
+        "date": "2025-11-15",
+        "time": "1:45 AM",
+        "from": "them",
+        "text": "I guess you have cancelled it"
+      },
+      {
+        "date": "2025-11-17",
+        "time": "12:33 PM",
+        "from": "me",
+        "text": "it must be some automation, let me re-book it"
+      },
+      {
+        "date": "2025-11-17",
+        "time": "12:36 PM",
+        "from": "me",
+        "text": "I can see it on my calendar (invite: Wed Nov 19, 10:00 to 10:30 AM IST)"
+      },
+      {
+        "date": "2025-11-17",
+        "time": "12:55 PM",
+        "from": "them",
+        "text": "ok got it"
+      },
+      {
+        "date": "2026-05-11",
+        "time": "9:43 AM",
+        "from": "me",
+        "text": "Hi Sidharth, how have you been man?"
+      },
+      {
+        "date": "2026-05-11",
+        "time": "9:54 AM",
+        "from": "them",
+        "text": "Hi Pratik, I am doing well, how are things at your end"
+      },
+      {
+        "date": "2026-05-11",
+        "time": "10:33 AM",
+        "from": "me",
+        "text": "It's going well"
+      },
+      {
+        "date": "2026-08-20",
+        "time": "4:40 PM",
+        "from": "me",
+        "text": "Hi Sidharth, I saw you're presenting on using MCP servers for automated root cause analysis at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-21",
+        "time": "10:58 AM",
+        "from": "them",
+        "text": "Hi Pratik, Sure, this is my number 3603816364"
+      },
+      {
+        "date": "2026-08-21",
+        "time": "2:49 PM",
+        "from": "me",
+        "text": "Thank you!"
+      }
+    ]
+  },
+  {
+    "id": "bharath-karnati",
+    "category": "Speaker",
+    "talkTitle": "Artificial General Intelligence Systems as Next-Generation Instruments: Unraveling Nature's Architectures and Dynamic Flows in Terrestrial and Cosmic Domains",
+    "talkAbstract": "Emerging Artificial General Intelligence (AGI) systems represent a transformative class of technologies capable of transcending the inherent limitations of human cognition and classical computing in scientific discovery. Nature, spanning Earth's complex ecosystems, biological self-organization, and cosmic-scale structures such as the cosmic web, dark energy dynamics, and quantum phenomena, operates through elegant yet deeply intricate architectures and flows. While humanity has successfully decoded foundational principles through observation, theory, and simulation, many critical mysteries persist in regimes characterized by extreme complexity, incomplete data, and non-linear interactions.\n\nThis paper positions AGI systems as the pivotal emerging technology for addressing these challenges. Unlike narrow AI tools, AGI architectures—designed for flexible reasoning, autonomous hypothesis generation, abductive inference, and large-scale multi-modal integration—enable the ingestion and synthesis of heterogeneous datasets (genomic, geospatial, astronomical, climate) at unprecedented scales and speeds. Such systems can discover novel mathematical symmetries, generate and prioritize testable hypotheses, simulate high-fidelity models of intractable phenomena, and propose optimized experimental or observational strategies in closed-loop discovery cycles.\n\nWe present a conceptual framework for AGI-driven scientific instrumentation, including architectural considerations for curiosity-aligned, truth-seeking systems, scalability requirements, and integration with existing scientific infrastructures. Drawing on recent advances in foundation models and reasoning engines, we illustrate potential breakthroughs in areas such as climate-biosphere modeling, quantum biology, and cosmological structure formation. Ethical and safety considerations for responsible deployment are also addressed.\n\nUltimately, AGI systems are framed as essential extensions of the scientific method, poised to accelerate humanity's understanding of natural architectures and flows across scales in the coming decade.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Bharath Karnati",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Manager Engineering, Stores and Services",
+    "company": "PetSmart",
+    "location": "Chandler, Arizona",
+    "linkedin": "https://www.linkedin.com/in/bharath-karnati-1120ba13/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Warm",
+    "summary": "19 years of experience, 7 of them at PetSmart as a Solutions Architect for POS, offer management, and AI. Earlier at Shutterfly, Diebold, and Wipro, and he studied at IIIT Hyderabad. Note: Kristine O'Connor was a PetSmart QA engineer from 2007 to 2013.",
+    "talkingPoints": [
+      "Release gating for ML systems.",
+      "Testing POS and store systems.",
+      "His new manager role and the team's test stack."
+    ],
+    "opener": "Hi Bharath, I'm at PNSQC now and come by our TestDino booth if you get a minute. Would love to hear more on how you define the target state before a release.",
+    "timeline": [
+      {
+        "date": "2026-08-20",
+        "title": "First outreach",
+        "text": "Messaged about his next-generation AGI systems talk."
+      },
+      {
+        "date": "2026-10-01",
+        "title": "Talked testing of learning systems",
+        "text": "Asked how he tests systems that keep learning. He said to test the data and learning platform thoroughly and hold releases until a target state is reached."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to meet at the booth.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-20",
+        "time": "11:40 PM",
+        "from": "me",
+        "text": "Hi Bharath, I saw you're presenting on next-generation AGI systems at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-10-01",
+        "time": "11:11 PM",
+        "from": "me",
+        "text": "hi bharath, looking forward to your pnsqc talk, we'll have a booth there too. curious how you test systems that keep learning: does a passing test mean anything a week later?"
+      },
+      {
+        "date": "2026-10-01",
+        "time": "11:21 PM",
+        "from": "them",
+        "text": "Thank you. Same here. I think the key here is to test the data and learning platform thoroughly and hold to releasing a new version until a target state is reached with training."
+      }
+    ]
+  },
+  {
+    "id": "yevheniia-sakovets",
+    "category": "Speaker",
+    "talkTitle": "Leading QA in the Age of AI: From Internal Tools Vibe‑Coding to Sustainable Quality",
+    "talkAbstract": "Many QA teams already use AI and often because it is pushed from top management or dictated by industry. AI adoption inside QA teams frequently becomes chaotic. Teams rely on built‑in AI features that appear inside tools they already use, while rarely having the time to analyze the rapidly changing AI market or identify the best solutions for their actual needs. Because market of AI changes so fast and also noone has time and right strategy yet.\n\nAt the same time, individual QA engineers often spend hours building internal AI tools to eliminate repetitive work — usually without proof‑of‑concepts, shared visibility or security review. These tools often duplicate existing efforts within the team or organization, introduce hidden risks and create fragmented approaches.\n\nThis talk focuses on practical, team‑level approaches for leading QA organizations through AI adoption. Instead of discussing specific AI tools, it presents concrete rules, workflows and team practices.\n\nIt also covers simple structure such as rotating AI champions, shared learning loops and AI‑focused retrospectives that help QA teams stay up to date with AI trends independently.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Yevheniia Sakovets",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Head of Quality Assurance (contract)",
+    "company": "Spin",
+    "location": "Los Angeles, California",
+    "linkedin": "https://www.linkedin.com/in/sakovets/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Warm",
+    "summary": "13 years across HealthCare, eCommerce, Fintech, and IoT. She holds ISTQB, Scrum Master, and PMP certifications and an MS in CS from Kyiv Polytechnic. Earlier at EPCVIP, EPAM, CEX.IO, Ciklum, and 3Shape.",
+    "talkingPoints": [
+      "Build vs buy for QA tools.",
+      "Mobile test reporting.",
+      "Running QA as a contract head."
+    ],
+    "opener": "Hi Yevheniia, I'm at PNSQC and at the TestDino booth. Looking forward to your talk on vibe-coded QA tools. Free for a quick coffee?",
+    "timeline": [
+      {
+        "date": "2026-08-22",
+        "title": "First outreach",
+        "text": "Messaged about her talk on AI and vibe-coded QA tools. She asked if we were presenting."
+      },
+      {
+        "date": "2026-08-22",
+        "title": "Shared TestDino",
+        "text": "Told her we are exhibiting TestDino, the Playwright cloud companion. She said she hopes to see us there."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to meet at the booth.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-22",
+        "time": "12:19 AM",
+        "from": "me",
+        "text": "Hi Yevheniia, I saw you're presenting on leading QA with AI and internal vibe-coded tools at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-22",
+        "time": "12:19 AM",
+        "from": "them",
+        "text": "Hi Pratik! Thank you for your message. Yeah, I'm looking forward for the October event. Are you also presenting?"
+      },
+      {
+        "date": "2026-08-22",
+        "time": "12:21 AM",
+        "from": "me",
+        "text": "Hi Yevheniia - Most probably"
+      },
+      {
+        "date": "2026-08-22",
+        "time": "12:21 AM",
+        "from": "me",
+        "text": "I still need to finalise few things"
+      },
+      {
+        "date": "2026-08-22",
+        "time": "12:31 AM",
+        "from": "me",
+        "text": "I am exhibiting TestDino (Playwright Cloud Companion)"
+      },
+      {
+        "date": "2026-08-22",
+        "time": "5:13 AM",
+        "from": "them",
+        "text": "Great! Hope to see you there"
+      }
+    ]
+  },
+  {
+    "id": "swati-seela",
+    "category": "Speaker",
+    "talkTitle": "Leading Testing in the Age of AI: A Practical Guide for Test Managers",
+    "talkAbstract": "AI is quickly becoming part of how teams build and test software, but most adoption starts at the individual level—engineers experimenting with tools to generate tests, data, or automation. What is often missing is how these practices scale within an organization and how they impact overall quality, particularly for test managers and leads responsible for defining strategy and ensuring quality outcomes.\n\nIn practice, the challenge is less about using AI and more about managing its impact within an organization. As adoption grows, questions emerge around tool selection, safe usage of data, consistency of generated tests, and how these outputs are reviewed and maintained. Without clear processes, teams evolve their own approaches, leading to fragmented practices and uneven quality.\n\nThis paper takes a practical view of how test managers and leads navigate these challenges. It starts with building team capability through training and enablement so engineers become responsible users of AI. It then examines how processes evolve, including managing prompt files alongside code, introducing versioning and review mechanisms for AI-generated test cases, and incorporating AI into pull request reviews. With these foundations in place, the paper explores how AI tools—such as copilots, GPT-based assistants, and MCP-style integrations—are selected within a rapidly expanding vendor landscape.\n\nThe paper presents a practical guide to introducing AI as a human-controlled capability for productivity augmentation while maintaining compliance, regulatory alignment, and quality outcomes.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Swati Seela",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Principal Senior Software Quality Assurance Engineer",
+    "company": "",
+    "location": "Portland, Oregon area",
+    "linkedin": "https://www.linkedin.com/in/swatiseela/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Warm",
+    "summary": "In QA since 2004, with CSTE and CSQA certifications. Her toolkit includes Selenium C#, JMeter, LoadRunner, UFT, SoapUI, and SQL, and she has a Udemy QA training course. This is her first time speaking at PNSQC though she has attended before. Her last listed role was at Mojio from 2022 to 2024, earlier FormFactor and Portland General Electric, so confirm her current employer.",
+    "talkingPoints": [
+      "Her AI testing guide.",
+      "Who to meet at PNSQC.",
+      "What she is working on now."
+    ],
+    "opener": "Hi Swati, made it to PNSQC! You were right, friendly crowd. Looking forward to your talk. Stop by the TestDino booth if you get a moment.",
+    "timeline": [
+      {
+        "date": "2026-08-21",
+        "title": "First outreach",
+        "text": "Messaged about her talk on leading testing in the age of AI. She said she is looking forward to it."
+      },
+      {
+        "date": "2026-08-22",
+        "title": "Talked first-timer notes",
+        "text": "She shared it is her first time speaking at PNSQC and that it is a friendly crowd. We mentioned exhibiting TestDino."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to meet at the booth.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-21",
+        "time": "7:34 PM",
+        "from": "me",
+        "text": "Hi Swati, I saw you're presenting a practical guide for leading testing in the age of AI at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-21",
+        "time": "7:34 PM",
+        "from": "them",
+        "text": "Hi Pratik, Looking forward to it!"
+      },
+      {
+        "date": "2026-08-21",
+        "time": "7:47 PM",
+        "from": "me",
+        "text": "Is this your first time? It's my first time and I will be exhbiting testdino - playwright observability and test orchestrator there"
+      },
+      {
+        "date": "2026-08-22",
+        "time": "4:00 AM",
+        "from": "them",
+        "text": "It is my first time speaking at PNSQC. I have attended it before. It is a friendly group of people. Looking forward to your exhibit. All the best!"
+      }
+    ]
+  },
+  {
+    "id": "austin-peck",
+    "category": "Speaker",
+    "talkTitle": "The Living Test Repository: Automating the Tedium of Tooling",
+    "talkAbstract": "As features are iteratively developed, requirements and testing scopes expand. Test repositories start out organized and manageable but quickly spiral out of control and become an untenable administrative burden. This paper introduces the concept of the \"Living Test Repository\", a dynamic, workflow-driven architecture that replaces manual data entry with intent-based tooling. By leveraging webhooks and workflows in tandem on top of existing systems QA teams can eliminate duplicated efforts, build a consistent testing core, launch tests and acquire feedback instantly.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Austin Peck",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Senior Quality Assurance Engineer (remote, since Feb 2024)",
+    "company": "Curtiss-Wright Corporation",
+    "location": "Beaverton, Oregon",
+    "linkedin": "https://www.linkedin.com/in/austin-peck-861393234/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Warm",
+    "summary": "At Curtiss-Wright for 4 years 8 months, earlier a Senior Software Quality Specialist there and a Software Engineer at Novus Labs from 2017 to 2022, and once a videographer at St. George News. He builds side projects like a lithophane 3D print converter. The connection request is still pending. He offered to drill into anything between sessions.",
+    "talkingPoints": [
+      "His test case model vs TestDino test management.",
+      "Linking cases to automation results.",
+      "His side projects."
+    ],
+    "opener": "Hi Austin, I'm at PNSQC now. Taking you up on the offer to drill in between sessions. When works for you?",
+    "timeline": [
+      {
+        "date": "2026-08-21",
+        "title": "First outreach",
+        "text": "Messaged about his talk on automating test repository management. He offered time to drill in between sessions."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to meet between sessions.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-21",
+        "time": "9:37 AM",
+        "from": "me",
+        "text": "Hi Austin, I saw you're presenting on automating test repository management at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-21",
+        "time": "9:37 AM",
+        "from": "them",
+        "text": "I'm looking forward to seeing you there! There is plenty of time between sessions or during refreshment times if you would like to drill into anything"
+      }
+    ]
+  },
+  {
+    "id": "raakesh-rajagopalan",
+    "category": "Speaker",
+    "talkTitle": "Deterministic PR Diff–Based Test Selection for Reducing CI Execution Time in API Testing Pipelines",
+    "talkAbstract": "Modern CI/CD pipelines for API-driven and microservice-based systems frequently execute full regression test suites for every pull request, resulting in increased build duration, higher compute utilization, and delayed feedback to developers. These inefficiencies scale significantly as both codebases and automated test suites grow.\n\nThis paper presents a deterministic, rule-based framework for reducing CI execution time through pull request (PR) diff–based test selection. The approach analyzes code changes at the PR level and maps modified application components to relevant API test suites using an explicit and maintainable configuration model. This model establishes traceability between backend modules (such as controllers and service layers) and tagged automated tests within a Karate-based testing framework.\n\nUnlike heuristic or machine-learning–based test selection techniques, this approach prioritizes determinism, ensuring that test selection is transparent, repeatable, and auditable across CI executions. This makes the framework suitable for enterprise CI/CD environments where predictability and stability are critical requirements.\n\nThe system is designed as a cross-repository CI/CD integration and can be adopted in standard orchestration platforms such as GitHub Actions and Jenkins without requiring modifications to application architecture or test framework design. Based on detected changes, only the impacted subset of regression tests is executed, while fallback mechanisms ensure baseline test coverage.\n\nA prototype implementation demonstrates a measurable reduction in executed test scope and overall CI runtime compared to full regression execution, while maintaining coverage of impacted functional areas. In addition, the system generates execution metrics that enable continuous refinement of mapping accuracy and test selection efficiency.\n\nThis work introduces a generalizable and practical approach for improving CI efficiency through explicit change-to-test traceability, offering a scalable alternative to full regression execution in modern API testing pipelines.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Raakesh Rajagopalan",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Software Engineer (AVP), Quality Engineering Lead",
+    "company": "U.S. Bank",
+    "location": "Cincinnati, Ohio",
+    "linkedin": "https://www.linkedin.com/in/raakesh-rajagopalan-a2296b63/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Friendly",
+    "summary": "16+ years in QA. He uses TestCafe and Karate frameworks for banking, cut E2E time by 50% with custom sync strategies that also reduced flaky failures, and relies on Datadog for RCA and Copilot. 9 years at TCS before this. He has a mutual connection with Tanvi Mittal, also at U.S. Bank in Cincinnati.",
+    "talkingPoints": [
+      "PR-based selection and CI time, which ties to TestDino orchestration.",
+      "Flaky test reduction.",
+      "TestCafe vs Playwright."
+    ],
+    "opener": "Hi Raakesh, I'm at PNSQC now. Looking forward to your PR-based test selection talk. Coffee after?",
+    "timeline": [
+      {
+        "date": "2026-08-20",
+        "title": "First outreach",
+        "text": "Messaged about his PR-based test selection talk. He said he would love to meet in person."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to grab coffee.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-20",
+        "time": "6:53 PM",
+        "from": "me",
+        "text": "Hi Raakesh, I saw you're presenting on PR-based test selection for reducing CI time at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-20",
+        "time": "6:53 PM",
+        "from": "them",
+        "text": "Hi pratik Thanks for reaching out! I'd love to meet you at pnsqc as well. Looking forward and connecting you in person."
+      },
+      {
+        "date": "2026-08-20",
+        "time": "11:24 PM",
+        "from": "me",
+        "text": "Thank you very much Rakesh :)"
+      }
+    ]
+  },
+  {
+    "id": "kristine-oconnor",
+    "category": "Speaker",
+    "talkTitle": "Signal Before the Storm: How Quality Intelligence Can Stop Harm Before it Becomes Irreversible",
+    "talkAbstract": "When my 86-year-old Aunt Cathy was scammed online and lost tens of thousands of dollars, every signal needed to prevent it was already there: the password reset that completed faster than she ever could have managed it, the navigation that moved with a confidence she'd never shown, the cash advance request that appeared out of nowhere. The failure wasn't the fraudster's ingenuity; it was the system's inability to recognize that the wrong person was in the room. This session discusses Quality Intelligence (QI) as a framework for connecting behavioral, biometric, and transactional signals before they converge into irreversible harm, creating a strategic framework for prevention. Attendees will learn why empathy is not a soft skill; it's the analytical foundation of prevention.",
+    "talkSource": "https://pnsqc.org/conference/2026/keynotes-invited-speakers/",
+    "name": "Kristine O'Connor",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Sr. Agile Transformation Consultant",
+    "company": "Agile Rising",
+    "location": "Greater Phoenix, Arizona",
+    "linkedin": "https://www.linkedin.com/in/kristine-oconnor-az/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Friendly",
+    "summary": "Decades in software quality before moving into coaching. She holds SAFe 6 SPC, ICP-ACC, RTE, and PMI-ACP. Earlier at Aetna/CVS Health, PetSmart QA, and Sonatype, and she founded Melonhead Consulting. There may be a referral path through her transformation clients.",
+    "talkingPoints": [
+      "Quality Intelligence and flow metrics.",
+      "Measuring CD pipelines.",
+      "The first metric she pushes clients to track."
+    ],
+    "opener": "Hi Kristine, I'm at PNSQC now and excited for your Quality Intelligence session. Would love to say hi after.",
+    "timeline": [
+      {
+        "date": "2026-08-19",
+        "title": "First outreach",
+        "text": "Messaged about her Quality Intelligence session. She said she is looking forward to meeting."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to say hi after her session.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-19",
+        "time": "5:28 PM",
+        "from": "me",
+        "text": "Hi Kristine, I saw that you'll be speaking about Quality Intelligence at PNSQC. I'd love to attend your session and meet you there!"
+      },
+      {
+        "date": "2026-08-22",
+        "time": "6:52 AM",
+        "from": "them",
+        "text": "Most definitely Pratik! I'm looking forward to meeting you :)"
+      }
+    ]
+  },
+  {
+    "id": "rebecca-long",
+    "category": "Speaker",
+    "talkTitle": "Together Apart: Building a QA Community of Practice in a Decentralized Organization",
+    "talkAbstract": "As a mass restructuring decentralized a previously centralized QA team, leadership acted in parallel by mandating a QA Community of Practice, aiming to prevent the fragmentation and quality risks often introduced by decentralization. This paper shares our journey of how an initially mandated initiative, met with skepticism and begrudging acceptance by QA, evolved through grassroots engagement into a community‑run, community‑owned, and self‑sustaining force for improving and sustaining quality across teams. This paper examines why Communities of Practice matter in distributed environments, how this one began as a top-down requirement, and how practitioners ultimately took ownership. Strategies include earning leadership buy-in and fostering engagement across teams that differ in autonomy, maturity, and management style, while balancing governance with community autonomy. The result: a quality culture built on connection, enabling shared standards, continuous learning, and resilience as both software and organizational systems scale.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Rebecca Long",
+    "formalName": "Becca",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "City Councilmember and technology leader (ex-Director Software Engineering)",
+    "company": "City of Cheney, WA",
+    "location": "Cheney, Washington",
+    "linkedin": "https://www.linkedin.com/in/amaya30/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Friendly",
+    "summary": "Background spans software quality, engineering, and cybersecurity across startup, finance, and SaaS. She went from Senior QA to Lead DevOps at RiskLens, and was at ENGIE Impact until Jan 2026. She founded Future Ada, a women in tech nonprofit, from 2017 to 2025, and studied at Eastern Washington University.",
+    "talkingPoints": [
+      "QA community across distributed teams.",
+      "Her next role in tech.",
+      "People-first leadership."
+    ],
+    "opener": "Hi Rebecca, I'm at PNSQC now. Looking forward to your QA community talk. Would love to say hi after.",
+    "timeline": [
+      {
+        "date": "2026-08-20",
+        "title": "First outreach",
+        "text": "Messaged about her talk on building a QA community in a decentralized organization. She said it would be great to meet."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to say hi after her talk.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-20",
+        "time": "8:20 PM",
+        "from": "me",
+        "text": "Hi Rebecca, I saw you're presenting on building a QA community in a decentralized organization at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-20",
+        "time": "8:21 PM",
+        "from": "them",
+        "text": "Hi Pratik! That would be great! Look forward to meeting you at PNSQC!"
+      },
+      {
+        "date": "2026-08-20",
+        "time": "11:23 PM",
+        "from": "me",
+        "text": "likewise Rebecca:)"
+      }
+    ]
+  },
+  {
+    "id": "vittalkumar-mirajkar",
+    "category": "Speaker",
+    "talkTitle": "Not all vulnernabitiles are born equal",
+    "talkAbstract": "Modern cloud-native systems are subjected to a wide spectrum of security assessment techniques, from infrastructure and container scanning to static application security testing (SAST), dynamic analysis (DAST), interactive analysis (IAST), and manual penetration testing. While these tools collectively enhance visibility into system weaknesses, they also generate an overwhelming volume of vulnerability findings with little to no contextual relevance. This abundance creates a critical challenge for engineering and product teams: not all vulnerabilities are born equal, yet existing practices frequently treat them as such and then the firefighting phase to remediate them starts.\nThis paper proposes a pragmatic, risk-informed framework for vulnerability prioritization and remediation in complex cloud and software environments. We argue that effective vulnerability management must move beyond isolated severity metrics (e.g., CVSS) and instead incorporate contextual dimensions such as exploitability, asset criticality, exposure surface, and the presence of compensating controls. By correlating findings, our approach enables organizations to identify \"actionable vulnerabilities\" that pose the highest real-world risk.\nWe introduce a structured prioritization model that classifies vulnerabilities into operational tiers: immediate (war-front), scheduled remediation, and acceptable risk.\nTo ensure sustainability, the paper further presents a governance model incorporating guardrails such as policy-as-code, secure coding baselines, and automated CI/CD enforcement mechanisms designed to prevent CVE regression and leakage into future releases. Finally, we describe an end-to-end remediation workflow that integrates developer feedback loops, risk acceptance protocols, and continuous monitoring.\nThrough this approach, we demonstrate that strategic prioritization, rather than exhaustive remediation is essential for scalable and effective vulnerability management. By recognizing that not all vulnerabilities warrant equal attention, organizations can achieve meaningful risk reduction while maintaining development velocity in modern cloud ecosystems.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Vittalkumar Mirajkar",
+    "formalName": "Vittal",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Senior Software Engineering Manager",
+    "company": "Skyhigh Security",
+    "location": "Bengaluru, India",
+    "linkedin": "https://www.linkedin.com/in/vittalkumar-mirajkar/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Friendly",
+    "summary": "16 years at McAfee before Skyhigh Security, moving from QA engineer to Technical QA Lead to Sr Principal Engineer to Engineering Manager. He is based in Bangalore, so plan a follow-up there.",
+    "talkingPoints": [
+      "How his team triages vulnerabilities.",
+      "A Bangalore follow-up meeting."
+    ],
+    "opener": "Hi Vittal, I'm at PNSQC now. Let's catch up between sessions, and plan a follow-up in Bangalore too.",
+    "timeline": [
+      {
+        "date": "2026-09-10",
+        "title": "First outreach",
+        "text": "Messaged about his talk on prioritizing software vulnerabilities. He said let's catch up."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to catch up between sessions.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-09-10",
+        "time": "7:57 PM",
+        "from": "me",
+        "text": "Hi Vittalkumar, I saw you're presenting on prioritizing software vulnerabilities at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-09-10",
+        "time": "8:58 PM",
+        "from": "them",
+        "text": "Great. Let's catch up"
+      },
+      {
+        "date": "2026-09-11",
+        "time": "10:12 AM",
+        "from": "me",
+        "text": "Definitely"
+      }
+    ]
+  },
+  {
+    "id": "havish-sripada",
+    "category": "Speaker",
+    "talkTitle": "From Finite State Machines to Belief Space Optimization: Improving Software Quality in Autonomous Robots",
+    "talkAbstract": "Modern autonomous robotic systems are increasingly expected to operate reliably in dynamic environments, adapt to changing task demands, and make decisions under uncertainty using incomplete and noisy sensor inputs. These expectations introduce software engineering challenges that are as critical as the underlying control and planning algorithms. In practice, robotics teams frequently encounter familiar software quality issues—brittle logic, escalating debugging effort, limited observability, and fragile behavior under edge conditions—yet these issues are amplified in autonomous systems operating within dynamic physical environments.\n\nWe present a novel methodology that addresses several limitations of traditional robotic software architectures. We applied this methodology while developing an advanced robot with specific requirements, characterized by strict hardware constraints, limited development time, and high variability in operating conditions. Autonomous robotic environment provides a realistic testbed for examining the relationship between software architecture and software quality. Robot faces real world dynamic environment, and the problem and solutions are applicable to general systems. Teams must iteratively develop, test, and deploy autonomous behaviors under real-time constraints, where failures are costly and rapid diagnosis is essential.\n\nTraditional robotics software architectures commonly rely on discrete abstractions such as finite state machines, command-based programming models, and locally recursive decision logic. While these approaches are effective for simple systems, we observed that as behavioral complexity increased, the resulting systems became significantly more difficult to maintain, debug, and extend. Logic became fragmented across state transitions and callbacks, implicit coupling increased across subsystems, and fault tolerance mechanisms often introduced additional brittle special cases.\n\nUnder these architectures, we observed recurring software quality failure modes, including state explosion, hidden dependencies, and limited runtime diagnosability. Failures frequently manifested as emergent behaviors rather than isolated defects, requiring substantial effort to reconstruct control flow and system state during debugging. These conditions reduced confidence when making changes and increased overall software quality risk throughout the development cycle.\n\nTo address these challenges, we transitioned to a continuous decision-making architecture that models robot state as a belief distribution over uncertainty rather than as a single discrete mode. Decisions are framed as global optimization objectives—such as minimizing expected cost or maximizing task success—evaluated over a continuously updated belief state. This approach replaces recursive command selection with a more explicit formulation of intent. For example, instead of iteratively deciding which task to complete next after finishing a previous one, a single trajectory flow may be generated to enable successful execution of all robot tasks in the most precise order. Furthermore, augmenting this controller with finite-horizon, simulation-based predictive modeling of state evolution allows real-time adaptation to change in both the environment and internal robot dynamics, enabling reasoning over future states to inform decisions in the present.\n\nFrom a software quality perspective, this architectural shift reduced brittle branching logic and improved modularity by clearly separating estimation, decision-making, and execution concerns. System behavior became easier to reason about because objectives and constraints were expressed explicitly, and degradation under uncertainty occurred gradually rather than through abrupt state transitions.\n\nThe architecture also significantly improved observability by exposing internal belief confidence, objective cost components, constraint satisfaction metrics, and selected robot actions as first-class runtime signals. These signals provided actionable diagnostic context during failures, enabling faster identification of root causes without requiring reconstruction of implicit state-machine transitions.\n\nTo further improve testability, we incorporated AI-assisted test generation to exercise autonomy logic across a broader range of operating conditions. We evaluated multiple AI tools and generated test cases using different tools to compare accuracy and coverage. AI-generated tests proposed variations in sensor noise, latency, initial pose error, and conflicting objectives — conditions that are difficult to anticipate manually. Generated tests were filtered using physical plausibility constraints and validated against behavioral invariants to ensure relevance.\n\nEvaluation focused on measurement-based indicators appropriate for robotics environments, including consistency of autonomous behavior across runs, ease of diagnosing failures, and perceived regression risk as the system evolved. We consistently observed improved maintainability and diagnosability compared to prior discrete state-machine architectures. Failures became easier to analyze due to increased observability, and regressions were less disruptive as features were added or modified.\n\nWhile additional quantitative analysis is planned as the system continues to evolve, the results reported here reflect practical outcomes observed under real-world constraints typical of autonomous and embedded software development. Although grounded in competitive robotics, the architectural lessons presented are transferable to a wide range of autonomous and cyber-physical systems in which uncertainty, limited resources, and software quality are primary concerns.\n\nIn summary, this work demonstrates that treating decision-making as a quality-critical subsystem — supported by continuous belief-based models, explicit optimization objectives, and AI-assisted testing—can significantly improve software quality outcomes in autonomous robotic systems.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Havish Sripada",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Co-Founder and CEO, Pedro Pathing; Researcher at S2 Labs",
+    "company": "Pedro Pathing",
+    "location": "Beaverton, Oregon",
+    "linkedin": "https://www.linkedin.com/in/havish-sripada-9aa53336a/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Friendly",
+    "summary": "A FIDE Master in chess and a Chessable course creator, and a Lead Programmer at RevAmped Robotics.",
+    "talkingPoints": [
+      "Testing path-planning code before it runs on a robot.",
+      "Simulation vs on-robot testing."
+    ],
+    "opener": "Hi Havish, I'm at PNSQC now. Looking forward to your robotics talk. Would love to say hi after.",
+    "timeline": [
+      {
+        "date": "2026-08-23",
+        "title": "First outreach",
+        "text": "Messaged about his talk on software quality in autonomous robots. He said he is looking forward to it."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to say hi after his talk.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-23",
+        "time": "10:06 AM",
+        "from": "me",
+        "text": "Hi Havish, I saw you're presenting on improving software quality in autonomous robots at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-23",
+        "time": "10:06 AM",
+        "from": "them",
+        "text": "Sure, looking forward to it!"
+      }
+    ]
+  },
+  {
+    "id": "tanvi-mittal",
+    "category": "Speaker",
+    "talkTitle": "ML Test Intelligence in Regulated Environments: What Fintech Taught Us About Building Trustworthy Pipelines",
+    "talkAbstract": "Machine learning promises to transform test intelligence, predicting failures, prioritizing coverage, and reducing cycle time. But deploying ML-driven test pipelines in regulated industries like financial services exposes critical gaps that generic implementations ignore: models whose decisions cannot be explained to auditors, false negative costs that dwarf those in less-regulated domains, and regulatory environments that treat black-box quality gates as compliance liabilities. This paper presents an end-to-end ML test intelligence pipeline developed and pressure-tested in a fintech context, examining where the pipeline succeeded, where it failed, and why those failure modes matter beyond financial services. Drawing on real implementation experience with gradient boosting models for test prioritization and anomaly detection for test log analysis, the paper identifies three primary breakdown points, explainability gaps, false negative exposure, and regulatory resistance to opaque automation and offers concrete architectural and process-level responses to each. Critically, the constraints that make fintech the hardest environment for ML test intelligence are the same constraints that maturing engineering organizations across healthcare, enterprise SaaS, and regulated government systems will inevitably face. The paper concludes with a domain-agnostic maturity model for ML test intelligence adoption, helping practitioners assess their pipeline's trustworthiness before regulators or production failures do it for them.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Tanvi Mittal",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Test Lead / SDET; startup advisor",
+    "company": "U.S. Bancorp",
+    "location": "Cincinnati, Ohio",
+    "linkedin": "https://www.linkedin.com/in/tanvi-mittal-7305091a/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Brief",
+    "summary": "An AI QA engineer building LLM tools for fraud detection and fintech API compliance, and she created two open source QA tools. She advises startups at UC US Venture Lab and the 1819 Innovation Hub. Earlier at TCS/Kroger, Neustar, and OneMain Financial. She has a mutual connection with Raakesh at U.S. Bank.",
+    "talkingPoints": [
+      "Her two open source QA tools.",
+      "ML fraud testing in regulated settings.",
+      "A startup advisor's view on TestDino."
+    ],
+    "opener": "Hi Tanvi, I'm at PNSQC now. Looking forward to your ML testing talk. Would love to hear about your open source tools after.",
+    "timeline": [
+      {
+        "date": "2026-08-21",
+        "title": "First outreach",
+        "text": "Messaged about her talk on trustworthy ML testing in regulated fintech. She replied, happy to meet."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to hear about her open source tools.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-08-21",
+        "time": "4:47 PM",
+        "from": "me",
+        "text": "Hi Tanvi, I saw you're presenting on trustworthy ML testing in regulated fintech at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-08-21",
+        "time": "4:48 PM",
+        "from": "them",
+        "text": "Hi, Pratik"
+      },
+      {
+        "date": "2026-08-21",
+        "time": "4:48 PM",
+        "from": "them",
+        "text": "Sure"
+      }
+    ]
+  },
+  {
+    "id": "ehsun-saeed",
+    "category": "Speaker",
+    "talkTitle": "Automating AWS Infrastructure Validation: A Python and Pytest Report",
+    "talkAbstract": "The rapid adoption of cloud computing and devops practices has significantly increased the frequency of infrastructure deployments, amplifying the risk of configuration errors and service instability. Conventional manual validation approaches are often time-intensive, prone to inconsistency, and difficult to integrate within continuous delivery workflows. This paper presents an industry-based case study detailing the design and implementation of an automated framework for validating cloud infrastructure in amazon web services (aws). The proposed solution leverages python, the pytest testing framework, and the boto3 sdk to perform systematic validation across key aws services, including s3, ec2, lambda, rds, and api gateway. The framework supports multiple validation layers, encompassing resource existence checks, configuration verification, service availability, and inter-service integration testing.\n\nThe solution is integrated into a ci/cd pipeline, enabling automated validation following each infrastructure deployment. Empirical results from real-world implementation demonstrate a substantial reduction in validation time—from hours to minutes—alongside improved consistency and earlier detection of misconfigurations. Furthermore, the framework enhances deployment confidence by providing repeatable and scalable validation mechanisms. The findings emphasise the role of automated infrastructure validation as a critical enabler of reliability and quality assurance in modern cloud-based devops environments, with potential applicability across diverse large-scale systems.",
+    "talkSource": "https://pnsqc.org/conference/2026/paper-presenters/",
+    "name": "Ehsun Saeed",
+    "formalName": "",
+    "tags": [
+      "PNSQC speaker"
+    ],
+    "role": "Contract IT Engineer; freelance Test Consultant",
+    "company": "Computacenter",
+    "location": "Sutton Coldfield, England, UK",
+    "linkedin": "https://www.linkedin.com/in/ehsun-saeed-aa54534/",
+    "firstFound": "PNSQC 2026 speaker lineup",
+    "warmth": "Brief",
+    "summary": "A UK contract tester. He worked with Leidos and Ensono on an MoD data centre migration, with Kindertons on API performance and Dynamics 365, and was a Test Manager at the Metropolitan Police from 2015 to 2020. He studied at Aston University.",
+    "talkingPoints": [
+      "Which AWS infra checks he automated.",
+      "UK public-sector testing."
+    ],
+    "opener": "Hi Ehsun, I'm at PNSQC now. Looking forward to your AWS infra validation talk. Would love to say hi after.",
+    "timeline": [
+      {
+        "date": "2026-09-04",
+        "title": "First outreach",
+        "text": "Messaged about his talk on automating AWS infrastructure validation. He gave a thumbs up."
+      },
+      {
+        "date": "2026-10-12",
+        "title": "PNSQC, Portland",
+        "text": "Both at PNSQC. Plan to say hi after his talk.",
+        "now": true
+      }
+    ],
+    "messages": [
+      {
+        "date": "2026-09-04",
+        "time": "12:37 AM",
+        "from": "me",
+        "text": "Hi Ehsun, I saw you're presenting on automating AWS infrastructure validation at PNSQC. would love to attend and meet you there!"
+      },
+      {
+        "date": "2026-09-04",
+        "time": "12:37 AM",
+        "from": "them",
+        "text": "(thumbs up)"
+      }
+    ]
+  },
+  {
+    "id": "philip-lew",
+    "category": "Organizer",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Philip Lew",
+    "formalName": "",
+    "tags": [
+      "PNSQC board"
+    ],
+    "role": "PNSQC President & Treasurer; CEO of XBOSoft",
+    "company": "XBOSoft",
+    "location": "",
+    "linkedin": "https://www.linkedin.com/in/philiplew/",
+    "firstFound": "PNSQC Board & Organization page",
+    "warmth": "",
+    "summary": "Leads PNSQC and runs XBOSoft. His focus includes software quality evaluation and how AI changes quality work. Useful conversation: what evidence teams need to trust AI-assisted testing.",
+    "talkingPoints": [
+      "Ask what he hopes attendees take away from this year's conference.",
+      "Discuss how teams evaluate AI testing tools beyond vendor claims.",
+      "Explore future community contributions if there is mutual interest."
+    ],
+    "opener": "Hi Phil, I'm attending PNSQC. What quality challenges are you hoping this year's conversations help teams work through?",
+    "timeline": [],
+    "messages": [],
+    "connectionNote": "Hi Phil, I saw you're leading PNSQC as President. I'm attending this year and interested in the conversations around AI and software quality. Would love to meet you there!",
+    "sources": [
+      "https://pnsqc.org/about/board_organization/",
+      "https://www.linkedin.com/in/philiplew/"
+    ],
+    "aliases": [
+      "Phil Lew",
+      "Philip Lew"
+    ]
+  },
+  {
+    "id": "moss-drake",
+    "category": "Organizer",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Moss Drake",
+    "formalName": "",
+    "tags": [
+      "PNSQC board"
+    ],
+    "role": "PNSQC Vice President & Program Chair",
+    "company": "Independent Consultant",
+    "location": "Portland, Oregon",
+    "linkedin": "https://www.linkedin.com/in/mossdrake/",
+    "firstFound": "PNSQC Board & Organization page",
+    "warmth": "",
+    "summary": "Shapes the PNSQC program and has a long history of volunteering with the conference. His background includes software development, agile delivery, healthcare and insurance.",
+    "talkingPoints": [
+      "Ask which sessions he recommends for people working on test automation.",
+      "Discuss communication between developers and quality teams.",
+      "Ask what makes a practical conference submission useful to attendees."
+    ],
+    "opener": "Hi Moss, I'm attending PNSQC. Which sessions would you recommend for someone working on test automation and failure analysis?",
+    "timeline": [],
+    "messages": [],
+    "connectionNote": "Hi Moss, I saw you're shaping the PNSQC program as Program Chair. I'm attending this year and looking forward to learning from the sessions. Would love to meet you there!",
+    "sources": [
+      "https://pnsqc.org/about/board_organization/",
+      "https://www.linkedin.com/in/mossdrake/"
+    ]
+  },
+  {
+    "id": "gwendolyn-avington",
+    "category": "Organizer",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Dr. Gwendolyn Avington",
+    "formalName": "Dr. Gwendolyn Avington",
+    "tags": [
+      "PNSQC board"
+    ],
+    "role": "PNSQC Board Member; leadership and organizational development consultant",
+    "company": "Avington Consulting, LLC",
+    "location": "Portland, Oregon",
+    "linkedin": "https://www.linkedin.com/in/gwendolyn-avington/",
+    "firstFound": "PNSQC Board & Organization page",
+    "warmth": "",
+    "summary": "Brings healthcare, leadership and communication experience to the PNSQC board. LinkedIn lists Avington Consulting, LLC; the PNSQC biography uses CLATAK Consulting. Keep that source difference visible.",
+    "talkingPoints": [
+      "Ask how leaders help teams adapt to changes in quality work.",
+      "Discuss communication barriers between engineering and business teams.",
+      "Learn how her healthcare perspective informs software quality discussions."
+    ],
+    "opener": "Hi Dr. Avington, I'm attending PNSQC. I'd enjoy hearing what helps teams communicate well as their quality practices change.",
+    "timeline": [],
+    "messages": [],
+    "connectionNote": "Hi Dr. Avington, I saw you're on the PNSQC board and work on leadership and team communication. I'm attending this year and would love to meet you and hear your perspective!",
+    "sources": [
+      "https://pnsqc.org/about/board_organization/",
+      "https://www.linkedin.com/in/gwendolyn-avington/"
+    ],
+    "aliases": [
+      "Gwen Avington",
+      "Gwendolyn Avington",
+      "Dr. Avington"
+    ]
+  },
+  {
+    "id": "ying-ki-kwong",
+    "category": "Organizer",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Ying Ki Kwong",
+    "formalName": "Dr. Ying Ki Kwong",
+    "tags": [
+      "PNSQC board"
+    ],
+    "role": "PNSQC Secretary; independent consultant",
+    "company": "",
+    "location": "Beaverton, Oregon",
+    "linkedin": "https://www.linkedin.com/in/ying-ki-kwong-87352a3/",
+    "firstFound": "PNSQC Board & Organization page",
+    "warmth": "",
+    "summary": "Serves as PNSQC Secretary. His biography describes statewide QA and e-government leadership in Oregon. LinkedIn's public listing still names the State of Oregon, so current employment needs confirmation.",
+    "talkingPoints": [
+      "Ask how quality leaders make test results useful for release decisions.",
+      "Discuss reporting across multiple teams and enterprise systems.",
+      "Learn what software teams can take from his public-sector QA experience."
+    ],
+    "opener": "Hi Ying Ki, I'm attending PNSQC. I'd enjoy hearing how your QA leadership experience shaped the way you assess release readiness.",
+    "timeline": [],
+    "messages": [],
+    "connectionNote": "Hi Ying Ki, I saw you're PNSQC's Secretary and have led statewide QA programs in Oregon. I'm attending this year and would love to meet you and learn from your experience!",
+    "sources": [
+      "https://pnsqc.org/about/board_organization/",
+      "https://www.linkedin.com/in/ying-ki-kwong-87352a3/"
+    ]
+  },
+  {
+    "id": "john-cvetko",
+    "category": "Organizer",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "John Cvetko",
+    "formalName": "",
+    "tags": [
+      "PNSQC board"
+    ],
+    "role": "PNSQC Board Member; Principal at TEK Associates",
+    "company": "TEK Associates",
+    "location": "",
+    "linkedin": "",
+    "firstFound": "PNSQC Board & Organization page",
+    "warmth": "",
+    "summary": "PNSQC board member whose consulting focuses on enterprise systems and government modernization. A direct LinkedIn profile is unconfirmed. Exclude the Australian Resource23 profile with the same name.",
+    "talkingPoints": [
+      "Discuss how modernization teams assess quality and delivery risk.",
+      "Ask what makes test evidence useful to government stakeholders.",
+      "Learn about quality challenges across large enterprise systems."
+    ],
+    "opener": "Hi John, I'm attending PNSQC. I'd enjoy hearing which quality challenges come up most often when teams modernize enterprise systems.",
+    "timeline": [],
+    "messages": [],
+    "connectionNote": "Hi John, I saw you're on the PNSQC board and work on modernizing enterprise systems. I'm attending this year and would love to meet you and hear your perspective on software quality!",
+    "sources": [
+      "https://pnsqc.org/about/board_organization/",
+      "https://safety.qatest.org/ponentes/john-cvetko/?lang=en"
+    ]
+  },
+  {
+    "id": "heather-wilcox",
+    "category": "Organizer",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Heather Wilcox",
+    "formalName": "",
+    "tags": [
+      "PNSQC board"
+    ],
+    "role": "PNSQC Board Member; Engineering Manager, QA and Reliability (PNSQC biography)",
+    "company": "NWEA (PNSQC biography)",
+    "location": "Portland, Oregon metropolitan area",
+    "linkedin": "https://www.linkedin.com/in/heather-wilcox-886b40/",
+    "firstFound": "PNSQC Board & Organization page",
+    "warmth": "",
+    "summary": "PNSQC board member with experience across QA, engineering and smaller software companies. The board biography describes QA and reliability leadership at NWEA; confirm her current title in conversation.",
+    "talkingPoints": [
+      "Ask how she balances delivery speed, reliability and quality.",
+      "Discuss making test failures easier for engineering teams to investigate.",
+      "Learn which quality signals help managers prioritize improvements."
+    ],
+    "opener": "Hi Heather, I'm attending PNSQC. I'd enjoy comparing notes on how teams balance delivery speed with QA and reliability.",
+    "timeline": [],
+    "messages": [],
+    "connectionNote": "Hi Heather, I saw you're on the PNSQC board and have worked across QA and reliability. I'm attending this year and would love to meet you and hear about your experience!",
+    "sources": [
+      "https://pnsqc.org/about/board_organization/",
+      "https://www.linkedin.com/in/heather-wilcox-886b40/"
+    ]
+  },
+  {
+    "id": "kathleen-hess",
+    "category": "Organizer",
+    "talkTitle": "",
+    "talkAbstract": "",
+    "talkSource": "",
+    "name": "Kathleen Hess",
+    "formalName": "",
+    "tags": [
+      "PNSQC board"
+    ],
+    "role": "PNSQC Board Member; SDET at Act-On Software",
+    "company": "Act-On Software",
+    "location": "Oregon City, Oregon",
+    "linkedin": "https://www.linkedin.com/in/kathleen-hess-0395b3152/",
+    "firstFound": "PNSQC Board & Organization page",
+    "warmth": "",
+    "summary": "SDET at Act-On Software and PNSQC board member. Her background includes test automation, API testing and security testing. A practitioner conversation is more appropriate than assuming purchase authority.",
+    "talkingPoints": [
+      "Ask what makes automation maintenance difficult in her team's workflow.",
+      "Discuss debugging failures across UI, API and security tests.",
+      "Ask about her testing tools before assuming any Playwright usage."
+    ],
+    "opener": "Hi Kathleen, I'm attending PNSQC. I'd enjoy hearing how your team approaches automation maintenance and investigating test failures.",
+    "timeline": [],
+    "messages": [],
+    "connectionNote": "Hi Kathleen, I saw you're on the PNSQC board and work on test automation and security testing at Act-On. I'm attending this year and would love to meet and compare notes!",
+    "sources": [
+      "https://pnsqc.org/about/board_organization/",
+      "https://www.linkedin.com/in/kathleen-hess-0395b3152/"
     ]
   }
 ];
@@ -206,7 +1558,7 @@ const LEADS = [
 const TODAY = new Date("2026-10-12T00:00:00");
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-const initials = n => n.split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+const initials = n => n.replace(/^Dr\.?\s+/i, "").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
 const fmt = d => new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -214,6 +1566,18 @@ const store = {
 };
 
 let current = LEADS[0]?.id;
+let activeCat = "";
+const CAT_COLOR = { Speaker: "#4f82e8", Exhibitor: "#c89030", Organizer: "#9168e6", Guest: "#7f8c9d" };
+const CAT_ORDER = ["Speaker", "Exhibitor", "Organizer", "Guest"];
+
+function renderFilters() {
+  const cats = [...new Set(LEADS.map(l => l.category).filter(Boolean))]
+    .sort((a, b) => CAT_ORDER.indexOf(a) - CAT_ORDER.indexOf(b));
+  if (!cats.length) { $("#filters").innerHTML = ""; return; }
+  const chip = (label, val, dot) =>
+    `<button class="filter-chip" data-cat="${esc(val)}" aria-pressed="${activeCat === val}">${dot ? `<span class="filter-dot" style="background:${dot}"></span>` : ""}${esc(label)}</button>`;
+  $("#filters").innerHTML = chip(`All (${LEADS.length})`, "", "") + cats.map(c => chip(`${c === "Organizer" ? "Organisers" : c === "Speaker" ? "Speakers" : c} (${LEADS.filter(l => l.category === c).length})`, c, CAT_COLOR[c] || "#7f8c9d")).join("");
+}
 
 function lastContact(l) {
   const m = l.messages[l.messages.length - 1];
@@ -227,18 +1591,21 @@ function subline(l) {
 
 function renderList() {
   const q = $("#q").value.trim().toLowerCase();
-  const hits = LEADS.filter(l => !q || [l.name, l.formalName, l.role, l.company, l.location, ...l.tags].join(" ").toLowerCase().includes(q));
+  const hits = LEADS.filter(l =>
+    (!activeCat || l.category === activeCat) &&
+    (!q || [l.name, l.formalName, ...(l.aliases || []), l.role, l.company, l.location, l.category, l.warmth, l.talkTitle, ...l.tags].join(" ").toLowerCase().includes(q)));
   $("#count").textContent = `${hits.length} of ${LEADS.length} lead${LEADS.length === 1 ? "" : "s"}`;
   $("#list").innerHTML = hits.length ? hits.map(l => `
-    <button class="lead-btn" data-id="${l.id}" aria-current="${l.id === current}">
+    <button class="lead-btn ${l.category === "Organizer" ? "organizer" : ""}" data-id="${esc(l.id)}" aria-current="${l.id === current}">
       <span class="avatar">${initials(l.name)}</span>
-      <span style="min-width:0"><span class="n">${esc(l.name)}</span><br><span class="s">${esc(subline(l))}</span></span>
-    </button>`).join("") : `<div class="empty">No one matches “${esc(q)}”. Try a first name or company.</div>`;
-  if (hits.length && !hits.some(h => h.id === current)) { current = hits[0].id; renderDossier(); renderList(); }
+      <span style="min-width:0"><span class="n">${esc(l.name)}</span><span class="s">${esc(subline(l))}</span><span class="tag cat cat-${esc((l.category || "Guest").toLowerCase())}">${l.category === "Organizer" ? "Organiser" : esc(l.category || "Guest")}</span></span>
+    </button>`).join("") : `<div class="empty">${q ? `No one matches “${esc(q)}”.` : "No one in this category yet."} Try another search or filter.</div>`;
+  if (!hits.length) { current = null; renderDossier(); }
+  else if (!hits.some(h => h.id === current)) { current = hits[0].id; renderDossier(); renderList(); }
 }
 
-function fact(label, val, hint) {
-  return `<div class="fact"><dt>${label}</dt><dd class="${val ? "" : "missing"}">${val || hint}</dd></div>`;
+function fact(label, val, hint, wide) {
+  return `<div class="fact${wide ? " wide" : ""}"><dt>${label}</dt><dd class="${val ? "" : "missing"}">${val || hint}</dd></div>`;
 }
 
 function renderDossier() {
@@ -255,15 +1622,17 @@ function renderDossier() {
   }).join("");
 
   $("#dossier").innerHTML = `
-    <section class="who">
+    <section class="who ${l.category === "Organizer" ? "organizer" : ""}">
       <span class="avatar">${initials(l.name)}</span>
       <div style="min-width:0">
         <h2>${esc(l.name)}</h2>
         <div class="sub">${esc([l.role, l.company].filter(Boolean).join(" at ") || "Role and company not added yet")}</div>
         <div class="tags">
+          ${l.category ? `<span class="tag cat cat-${esc(l.category.toLowerCase())}">${l.category === "Organizer" ? "Organiser" : esc(l.category)}</span>` : ""}
           ${l.tags.map(t => `<span class="tag accent">${esc(t)}</span>`).join("")}
-          <span class="tag">${esc(l.warmth)}</span>
-          <span class="tag">Last chat ${lastContact(l)}</span>
+          ${l.warmth ? `<span class="tag">${esc(l.warmth)}</span>` : ""}
+          ${l.messages.length ? `<span class="tag">Last chat ${lastContact(l)}</span>` : ""}
+          ${l.category === "Organizer" && !l.messages.length ? `<span class="tag">Connection status unknown</span>` : ""}
           ${met ? `<span class="tag good">Met at PNSQC</span>` : ""}
         </div>
       </div>
@@ -272,14 +1641,26 @@ function renderDossier() {
     <section>
       <h3>Details</h3>
       <dl class="facts" style="margin:0">
-        ${fact("Current role", esc(l.role), "Add from LinkedIn")}
-        ${fact("Company", esc(l.company), "Add from LinkedIn")}
+        ${fact("Current role", esc(l.role), "Add from LinkedIn", true)}
+        ${fact("Company", esc(l.company), "Add from LinkedIn", true)}
         ${fact("Based in", esc(l.location), "Add from LinkedIn")}
         ${fact("How we found them", esc(l.firstFound))}
-        ${fact("Goes by", l.formalName ? `${esc(l.name.split(" ")[0])} (full: ${esc(l.formalName)})` : "")}
-        ${fact("LinkedIn", `<a href="${esc(l.linkedin)}" target="_blank" rel="noopener">Open profile ↗</a>`)}
+        ${fact("Goes by", l.aliases?.length ? esc(l.aliases.join(", ")) : l.formalName ? esc(l.formalName) : "", "Not specified")}
+        ${fact("LinkedIn", l.linkedin ? `<a href="${esc(l.linkedin)}" target="_blank" rel="noopener">Open profile ↗</a>` : "", "Profile unconfirmed")}
       </dl>
     </section>
+
+    ${l.category === "Speaker" && l.talkTitle ? `
+    <section>
+      <h3>Speaking at PNSQC</h3>
+      <div class="talk-card">
+        <div class="talk-title">${esc(l.talkTitle)}</div>
+        ${l.talkAbstract
+          ? `<p class="talk-abstract" id="abstract">${esc(l.talkAbstract)}</p><button class="talk-more" id="abstract-more" hidden>Show full abstract</button>`
+          : `<p class="talk-abstract pending">Abstract not published in the PNSQC program yet.</p>`}
+        ${l.talkSource ? `<p class="talk-src"><a href="${esc(l.talkSource)}" target="_blank" rel="noopener">PNSQC program ↗</a></p>` : ""}
+      </div>
+    </section>` : ""}
 
     <section class="brief">
       <h3 style="margin:0">Context before you walk up</h3>
@@ -287,15 +1668,28 @@ function renderDossier() {
       <ul>${l.talkingPoints.map(t => `<li>${esc(t)}</li>`).join("")}</ul>
     </section>
 
+    ${l.connectionNote ? `
     <section class="opener">
-      <h3 style="margin:0">Message to send now</h3>
+      <h3 style="margin:0">Connection note</h3>
+      <blockquote id="cn-text">${esc(l.connectionNote)}</blockquote>
+      <div class="row">
+        <button class="btn" id="cn-copy">Copy note</button>
+        ${l.linkedin ? `<a class="btn ghost" href="${esc(l.linkedin)}" target="_blank" rel="noopener">Open LinkedIn ↗</a>` : `<span class="hint">Profile unconfirmed</span>`}
+        <span class="toast" id="cn-toast" hidden>Copied</span>
+      </div>
+      <p class="hint" style="margin:0">LinkedIn connection invite draft. Not sent.</p>
+    </section>` : ""}
+
+    ${l.opener ? `
+    <section class="opener">
+      <h3 style="margin:0">${l.category === "Organizer" ? "In-person opener or later message" : "Message to send now"}</h3>
       <blockquote id="opener-text">${esc(l.opener)}</blockquote>
       <div class="row">
         <button class="btn" id="copy">Copy message</button>
-        <a class="btn ghost" href="${esc(l.linkedin)}" target="_blank" rel="noopener">Open LinkedIn chat ↗</a>
+        ${l.linkedin ? `<a class="btn ghost" href="${esc(l.linkedin)}" target="_blank" rel="noopener">Open LinkedIn chat ↗</a>` : `<span class="hint">Profile unconfirmed</span>`}
         <span class="toast" id="toast" hidden>Copied</span>
       </div>
-    </section>
+    </section>` : ""}
 
     <section>
       <h3>Where to catch them</h3>
@@ -306,18 +1700,22 @@ function renderDossier() {
       </div>
     </section>
 
+    ${l.timeline.length ? `
     <section>
       <h3>History</h3>
       <div class="timeline">
         ${l.timeline.map(t => `<div class="tl ${t.now ? "now" : ""}"><div class="d">${fmt(t.date)}</div><div class="t">${esc(t.title)}</div><div class="x">${esc(t.text)}</div></div>`).join("")}
       </div>
-    </section>
+    </section>` : ""}
 
+    ${l.messages.length ? `
     <section>
       <h3>LinkedIn conversation</h3>
       <div class="chat">${chat}</div>
-    </section>
+    </section>` : ""}
 
+    ${l.category === "Organizer" ? '<p class="hint">No contact history was supplied. Drafts have not been sent. Confirm availability before planning a meeting.</p>' : ''}
+    ${l.sources?.length ? '<section><h3>Profile sources</h3><ul class="source-links">'+l.sources.map(url=>'<li><a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(url.includes('pnsqc.org')?'PNSQC board biography':url.includes('linkedin.com')?'LinkedIn profile':'Supporting biography')+' ↗</a></li>').join('')+'</ul></section>' : ''}
     <section class="notes">
       <h3>At the event</h3>
       <div style="display:flex;flex-direction:column;gap:10px">
@@ -327,14 +1725,26 @@ function renderDossier() {
       </div>
     </section>`;
 
-  $("#copy").onclick = async () => {
-    const t = $("#toast");
-    try { await navigator.clipboard.writeText(l.opener); t.textContent = "Copied"; }
-    catch { const r = document.createRange(); r.selectNodeContents($("#opener-text")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); t.textContent = "Selected, press Ctrl+C"; }
-    t.hidden = false; setTimeout(() => t.hidden = true, 1800);
+  const wireCopy = (btnId, toastId, textId, value) => {
+    const btn = $(btnId); if (!btn) return;
+    btn.onclick = async () => {
+      const t = $(toastId);
+      try { await navigator.clipboard.writeText(value); t.textContent = "Copied"; }
+      catch { const r = document.createRange(); r.selectNodeContents($(textId)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); t.textContent = "Selected, press Ctrl+C"; }
+      t.hidden = false; setTimeout(() => t.hidden = true, 1800);
+    };
   };
+  wireCopy("#copy", "#toast", "#opener-text", l.opener);
+  wireCopy("#cn-copy", "#cn-toast", "#cn-text", l.connectionNote);
   $("#met").onchange = e => { store.set(`met:${l.id}`, e.target.checked ? "1" : "0"); renderDossier(); renderList(); };
   $("#notes").oninput = e => store.set(`notes:${l.id}`, e.target.value);
+
+  const abs = $("#abstract"), absMore = $("#abstract-more");
+  if (abs && absMore && abs.scrollHeight > 190) {
+    abs.classList.add("clamp");
+    absMore.hidden = false;
+    absMore.onclick = () => { const clamped = abs.classList.toggle("clamp"); absMore.textContent = clamped ? "Show full abstract" : "Show less"; };
+  }
 }
 
 $("#list").addEventListener("click", e => {
@@ -343,7 +1753,12 @@ $("#list").addEventListener("click", e => {
   if (matchMedia("(max-width: 820px)").matches) $("#dossier").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 $("#q").addEventListener("input", renderList);
-renderList(); renderDossier();
+$("#filters").addEventListener("click", e => {
+  const b = e.target.closest(".filter-chip"); if (!b) return;
+  activeCat = b.dataset.cat || "";
+  renderFilters(); renderList();
+});
+renderFilters(); renderList(); renderDossier();
 </script>
 </body>
 </html>
